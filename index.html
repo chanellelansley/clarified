@@ -65,7 +65,7 @@
             <p class="landing-subtitle">Get clarity on the decision that's been keeping you up at night.</p>
 
             <button class="btn btn-primary btn-large btn-full" onclick="startGuestDecision()">
-                What's on your mind? →
+                Get started →
             </button>
 
             <p class="landing-signin">
@@ -397,22 +397,16 @@
             <!-- Header Section -->
             <div class="decisions-header">
                 <div class="decisions-header-top">
-                    <div class="greeting">
-                        <h1 id="decisions-greeting">Good morning</h1>
-                    </div>
+                    <p class="greeting-subtle" id="decisions-greeting">Good morning</p>
                     <div class="streak-badge" id="streak-badge" style="display: none;">
                         <span class="streak-icon">🔥</span>
                         <span class="streak-text"><strong id="streak-count">0</strong> day streak</span>
                     </div>
                 </div>
-
-                <button class="btn-primary btn-cta" onclick="showPage('decision-type'); return false;">
-                    What's on your mind?
-                </button>
             </div>
 
-            <!-- Stats Row -->
-            <div class="decisions-stats" id="decisions-stats">
+            <!-- Stats Row (hidden when no decisions) -->
+            <div class="decisions-stats" id="decisions-stats" style="display: none;">
                 <div class="stat-card">
                     <div class="stat-icon">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -464,7 +458,7 @@
                 </div>
                 <h3>No decisions yet</h3>
                 <button class="btn-primary btn-cta" onclick="showPage('decision-type'); return false;">
-                    What's on your mind?
+                    Get started
                 </button>
             </div>
 
@@ -1083,7 +1077,6 @@
                     <div class="flow-progress-dot active"></div>
                     <div class="flow-progress-dot"></div>
                     <div class="flow-progress-dot"></div>
-                    <div class="flow-progress-dot"></div>
                 </div>
 
                 <h1 class="page-title">What's the decision?</h1>
@@ -1122,24 +1115,34 @@
                         </svg>
                         Back
                     </button>
-                    <div class="flow-progress-text">Step 2 of 4</div>
+                    <div class="flow-progress-text">Step 2 of 3</div>
                 </div>
                 <h2 class="page-title">What matters most right now?</h2>
-                <p class="text-center text-muted mb-xl">In your own words</p>
+                <p class="text-center text-muted mb-xl">Pick what resonates</p>
 
-                <div class="card">
+                <!-- Loading state while generating chips -->
+                <div class="matters-loading" id="matters-loading" style="display: none;">
+                    <div class="spinner-sm"></div>
+                    <span>Thinking about what matters...</span>
+                </div>
+
+                <!-- Dynamic matters chips -->
+                <div class="chip-grid" id="quick-matters-chips" style="display: none;"></div>
+
+                <!-- Custom matters input (shown when "Other" is selected) -->
+                <div class="card mt-md" id="quick-custom-matters-container" style="display: none;">
                     <input
                         type="text"
-                        id="quick-matters-input"
+                        id="quick-custom-matters-input"
                         class="input"
-                        placeholder="Type what's most important to you...">
+                        placeholder="Type what matters most...">
                 </div>
 
                 <button class="btn btn-primary btn-full mt-lg" id="quick-continue-2">Continue</button>
             </div>
         </div>
 
-        <!-- Step 3: How You Want to Feel -->
+        <!-- Step 3: How You Want to Feel (Final Step) -->
         <div class="page" id="page-quick-3">
             <div class="container">
                 <div class="decision-flow-header">
@@ -1149,7 +1152,7 @@
                         </svg>
                         Back
                     </button>
-                    <div class="flow-progress-text">Step 3 of 4</div>
+                    <div class="flow-progress-text">Step 3 of 3</div>
                 </div>
                 <h2 class="page-title">How do you want to feel after this?</h2>
                 <p class="text-center text-muted mb-xl">Pick what resonates</p>
@@ -1162,36 +1165,19 @@
                     <button class="chip" data-emotion="comfortable">Comfortable</button>
                     <button class="chip" data-emotion="healthy">Healthy</button>
                     <button class="chip" data-emotion="relieved">Relieved</button>
+                    <button class="chip" data-emotion="other">Other</button>
                 </div>
 
-                <button class="btn btn-primary btn-full mt-xl" id="quick-continue-3">Continue</button>
-            </div>
-        </div>
-
-        <!-- Step 4: Anything Else -->
-        <div class="page" id="page-quick-4">
-            <div class="container">
-                <div class="decision-flow-header">
-                    <button class="flow-back-btn" onclick="showPage('quick-3'); return false;">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="15 18 9 12 15 6"></polyline>
-                        </svg>
-                        Back
-                    </button>
-                    <div class="flow-progress-text">Step 4 of 4</div>
-                </div>
-                <h2 class="page-title">Anything else?</h2>
-                <p class="text-center text-muted mb-xl">Optional, but might help</p>
-
-                <div class="card">
-                    <textarea
-                        id="quick-context-input"
-                        class="textarea"
-                        rows="4"
-                        placeholder="Any other context..."></textarea>
+                <!-- Custom emotion input (shown when "Other" is selected) -->
+                <div class="card mt-md" id="quick-custom-emotion-container" style="display: none;">
+                    <input
+                        type="text"
+                        id="quick-custom-emotion-input"
+                        class="input"
+                        placeholder="Describe how you want to feel...">
                 </div>
 
-                <button class="btn btn-primary btn-full mt-lg" id="quick-continue-4">Get recommendation</button>
+                <button class="btn btn-primary btn-full mt-xl" id="quick-continue-3">Get recommendation</button>
             </div>
         </div>
 

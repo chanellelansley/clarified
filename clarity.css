@@ -2392,6 +2392,38 @@ p, li {
     margin-top: var(--spacing-sm);
 }
 
+.next-steps-section {
+    margin-top: var(--spacing-lg);
+    padding: var(--spacing-md);
+    background: var(--gray-50);
+    border-radius: var(--radius-md);
+    border-left: 3px solid var(--primary);
+}
+
+.next-steps-header {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--gray-700);
+    margin-bottom: var(--spacing-sm);
+}
+
+.next-steps-list {
+    margin: 0;
+    padding-left: var(--spacing-lg);
+    list-style-type: disc;
+}
+
+.next-steps-list li {
+    font-size: 0.9rem;
+    color: var(--gray-600);
+    line-height: 1.5;
+    margin-bottom: var(--spacing-xs);
+}
+
+.next-steps-list li:last-child {
+    margin-bottom: 0;
+}
+
 .quick-result-streak {
     margin-top: var(--spacing-xl);
     padding-top: var(--spacing-lg);
@@ -3499,7 +3531,7 @@ p, li {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
 }
 
 .greeting h1 {
@@ -3507,6 +3539,14 @@ p, li {
     font-size: 24px;
     font-weight: 500;
     color: #111827;
+    margin: 0;
+}
+
+/* Friendly greeting for home screen */
+.greeting-subtle {
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: var(--gray-800);
     margin: 0;
 }
 
@@ -3537,6 +3577,43 @@ p, li {
     font-size: 16px;
     border: none;
     outline: none;
+}
+
+/* CTA wrapper with subtitle */
+.cta-wrapper {
+    text-align: center;
+}
+
+.cta-subtitle {
+    margin: 0.5rem 0 0 0;
+    font-size: 0.85rem;
+    color: var(--gray-500);
+}
+
+/* Quick prompt examples */
+.quick-prompts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.quick-prompt-chip {
+    background: var(--gray-100);
+    border: 1px solid var(--gray-200);
+    border-radius: 20px;
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+    color: var(--gray-600);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.quick-prompt-chip:hover {
+    background: var(--gray-200);
+    color: var(--gray-800);
+    border-color: var(--gray-300);
 }
 
 /* Stats Row */
@@ -6821,6 +6898,17 @@ p, li {
     border-top-color: var(--sage-green);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
+}
+
+/* Matters loading state */
+.matters-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 2rem;
+    color: var(--gray-500);
+    font-size: 0.9rem;
 }
 
 /* Gains and Tradeoffs Lists */
@@ -14530,6 +14618,18 @@ textarea:focus,
 .dna-locked-icon {
     font-size: 32px;
     margin-bottom: 16px;
+    color: var(--sage-green);
+}
+
+.dna-locked-icon svg {
+    width: 32px;
+    height: 32px;
+}
+
+.dna-subtitle {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 16px;
 }
 
 .dna-locked-card h3 {
@@ -14557,6 +14657,14 @@ textarea:focus,
     background: linear-gradient(90deg, #418F6F, #68B89B);
     border-radius: 4px;
     transition: width 0.3s ease;
+}
+
+/* DNA Card Container - visual separation */
+#dna-card-container {
+    margin-top: 2rem;
+    padding: 0 var(--pad-page);
+    border-top: 1px solid var(--gray-200);
+    padding-top: 1.5rem;
 }
 
 .dna-progress-text {

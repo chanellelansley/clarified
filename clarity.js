@@ -968,39 +968,153 @@ document.getElementById('quick-continue-1')?.addEventListener('click', () => {
 
     quickDecisionState.decision = decision;
     showPage('quick-2');
+
+    // Generate dynamic matters chips based on the decision
+    generateMattersChips(decision);
 });
 
 enableEnterKey('quick-decision-input', 'quick-continue-1');
+
+// Generate dynamic "what matters" chips based on decision
+async function generateMattersChips(decision) {
+    const loadingEl = document.getElementById('matters-loading');
+    const chipsContainer = document.getElementById('quick-matters-chips');
+    const customContainer = document.getElementById('quick-custom-matters-container');
+
+    // Show loading, hide chips
+    loadingEl.style.display = 'flex';
+    chipsContainer.style.display = 'none';
+    customContainer.style.display = 'none';
+
+    // Generic fallback chips
+    const fallbackChips = ['Saving money', 'Saving time', 'My health', 'Less stress', 'Being productive', 'Other'];
+
+    try {
+        const systemPrompt = `You generate 5 short values/priorities relevant to a decision. Return ONLY a JSON array of 5 strings, each 2-4 words max. Make them specific to the decision context. Example: ["Saving money", "My health", "Less stress", "More free time", "Being responsible"]`;
+
+        const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                system: systemPrompt,
+                messages: [{ role: 'user', content: `Decision: "${decision}"\n\nGenerate 5 relevant values/priorities as a JSON array.` }],
+                prompt_version: 'matters-chips-v1'
+            })
+        });
+
+        if (!response.ok) throw new Error('API call failed');
+
+        const data = await response.json();
+        const content = data.content?.[0]?.text || data.text || '';
+
+        // Parse JSON array from response
+        const jsonMatch = content.match(/\[[\s\S]*?\]/);
+        let chips = fallbackChips;
+
+        if (jsonMatch) {
+            try {
+                const parsed = JSON.parse(jsonMatch[0]);
+                if (Array.isArray(parsed) && parsed.length >= 3) {
+                    chips = [...parsed.slice(0, 5), 'Other'];
+                }
+            } catch (e) {
+                console.log('[Matters] JSON parse error, using fallback');
+            }
+        }
+
+        renderMattersChips(chips);
+    } catch (error) {
+        console.error('[Matters] Error generating chips:', error);
+        renderMattersChips(fallbackChips);
+    } finally {
+        loadingEl.style.display = 'none';
+        chipsContainer.style.display = 'flex';
+    }
+}
+
+// Render matters chips to the container
+function renderMattersChips(chips) {
+    const container = document.getElementById('quick-matters-chips');
+    container.innerHTML = '';
+
+    chips.forEach(chipText => {
+        const chip = document.createElement('button');
+        chip.className = 'chip';
+        chip.textContent = chipText;
+        chip.dataset.matters = chipText.toLowerCase() === 'other' ? 'other' : chipText;
+
+        chip.addEventListener('click', function() {
+            // Remove selected from all chips
+            container.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+            this.classList.add('selected');
+
+            // Show/hide custom input based on "Other" selection
+            const customContainer = document.getElementById('quick-custom-matters-container');
+            const customInput = document.getElementById('quick-custom-matters-input');
+
+            if (this.dataset.matters === 'other') {
+                customContainer.style.display = 'block';
+                customInput.focus();
+            } else {
+                customContainer.style.display = 'none';
+                customInput.value = '';
+            }
+        });
+
+        container.appendChild(chip);
+    });
+}
 
 // Mic button (placeholder - would need Web Speech API)
 document.getElementById('quick-mic-btn')?.addEventListener('click', () => {
     alert('Voice input coming soon!');
 });
 
-// Step 2: What Matters
+// Step 2: What Matters (using dynamic chips)
 document.getElementById('quick-continue-2')?.addEventListener('click', () => {
-    const matters = document.getElementById('quick-matters-input').value.trim();
+    const selectedChip = document.querySelector('#quick-matters-chips .chip.selected');
 
-    if (!matters) {
-        document.getElementById('quick-matters-input').focus();
+    if (!selectedChip) {
+        alert('Please select what matters most to you.');
         return;
     }
 
-    quickDecisionState.matters = matters;
+    // Handle custom input if "Other" was selected
+    if (selectedChip.dataset.matters === 'other') {
+        const customMatters = document.getElementById('quick-custom-matters-input').value.trim();
+        if (!customMatters) {
+            alert('Please type what matters most to you.');
+            document.getElementById('quick-custom-matters-input').focus();
+            return;
+        }
+        quickDecisionState.matters = customMatters;
+    } else {
+        quickDecisionState.matters = selectedChip.dataset.matters;
+    }
+
     showPage('quick-3');
 });
-
-enableEnterKey('quick-matters-input', 'quick-continue-2');
 
 // Step 3: Emotion Selection
 document.querySelectorAll('#quick-emotion-cards .chip').forEach(chip => {
     chip.addEventListener('click', function() {
         document.querySelectorAll('#quick-emotion-cards .chip').forEach(c => c.classList.remove('selected'));
         this.classList.add('selected');
+
+        // Show/hide custom emotion input based on "Other" selection
+        const customContainer = document.getElementById('quick-custom-emotion-container');
+        const customInput = document.getElementById('quick-custom-emotion-input');
+        if (this.dataset.emotion === 'other') {
+            customContainer.style.display = 'block';
+            customInput.focus();
+        } else {
+            customContainer.style.display = 'none';
+            customInput.value = '';
+        }
     });
 });
 
-document.getElementById('quick-continue-3')?.addEventListener('click', () => {
+document.getElementById('quick-continue-3')?.addEventListener('click', async () => {
     const selectedEmotion = document.querySelector('#quick-emotion-cards .chip.selected');
 
     if (!selectedEmotion) {
@@ -1008,21 +1122,22 @@ document.getElementById('quick-continue-3')?.addEventListener('click', () => {
         return;
     }
 
-    quickDecisionState.emotion = selectedEmotion.dataset.emotion;
-    showPage('quick-4');
-});
+    // Handle custom emotion if "Other" was selected
+    if (selectedEmotion.dataset.emotion === 'other') {
+        const customEmotion = document.getElementById('quick-custom-emotion-input').value.trim();
+        if (!customEmotion) {
+            alert('Please describe how you want to feel.');
+            return;
+        }
+        quickDecisionState.emotion = customEmotion;
+    } else {
+        quickDecisionState.emotion = selectedEmotion.dataset.emotion;
+    }
 
-// Step 4: Anything Else (Optional)
-document.getElementById('quick-continue-4')?.addEventListener('click', async () => {
-    const context = document.getElementById('quick-context-input').value.trim();
-    quickDecisionState.context = context;
-
-    // Navigate to results and generate recommendation
+    // Go directly to results (Step 4 removed)
     showPage('quick-results');
     await generateQuickRecommendation();
 });
-
-enableEnterKey('quick-context-input', 'quick-continue-4');
 
 // Generate AI Recommendation
 async function generateQuickRecommendation() {
@@ -1033,7 +1148,9 @@ async function generateQuickRecommendation() {
     contentEl.style.display = 'none';
 
     try {
-        const systemPrompt = `You are a decisive coach who gives CLEAR, SPECIFIC recommendations.
+        const systemPrompt = `ABSOLUTE RULE: Never say "Trust your instinct", "Go with what feels right", "Follow your gut", or any variation. These phrases are BANNED. The user is asking you BECAUSE they don't trust their instinct. Give a SPECIFIC recommendation from the user's actual options.
+
+You are a decisive coach who gives CLEAR, SPECIFIC recommendations.
 
 CRITICAL RULES:
 - ALWAYS give a specific recommendation based on the actual options in the decision
@@ -1047,11 +1164,21 @@ Return your answer in this EXACT format:
 RECOMMENDATION: [2-4 word specific action from the options, like "Cook tonight" or "Take the job"]
 REASON: [One sentence why, tied to what they said matters. Reference the specific situation using "you" and "your".]
 CAVEAT: [One short sentence optional caveat or tip. Keep it brief. Use "you".]
+NEXT_STEPS:
+- [First concrete action they can take in the next 10 minutes]
+- [Second action or resource if relevant]
 
 Example:
 Decision: "Should I cook tonight or order food?"
 What matters: "feeling good after"
-GOOD: "Cook tonight" / "You said feeling good matters. Cooking gives you more control."
+GOOD:
+RECOMMENDATION: Cook tonight
+REASON: You said feeling good matters. Cooking gives you more control over what goes into your meal.
+CAVEAT: If you're exhausted, a simple meal still counts as cooking.
+NEXT_STEPS:
+- Check what ingredients you have and pick a 20-minute recipe
+- Put on some music to make cooking enjoyable
+
 BAD: "Trust your instinct" / "Go with what feels right"`;
 
         const userPrompt = `Decision: "${quickDecisionState.decision}"
@@ -1079,14 +1206,23 @@ Analyze this decision and give a SPECIFIC recommendation from the options in the
         let recommendation = '';
         let reason = '';
         let caveat = '';
+        let nextSteps = [];
+        let inNextSteps = false;
 
         lines.forEach(line => {
             if (line.toUpperCase().startsWith('RECOMMENDATION:')) {
                 recommendation = line.replace(/RECOMMENDATION:/i, '').trim();
+                inNextSteps = false;
             } else if (line.toUpperCase().startsWith('REASON:')) {
                 reason = line.replace(/REASON:/i, '').trim();
+                inNextSteps = false;
             } else if (line.toUpperCase().startsWith('CAVEAT:')) {
                 caveat = line.replace(/CAVEAT:/i, '').trim();
+                inNextSteps = false;
+            } else if (line.toUpperCase().startsWith('NEXT_STEPS:') || line.toUpperCase().startsWith('NEXT STEPS:')) {
+                inNextSteps = true;
+            } else if (inNextSteps && line.trim().startsWith('-')) {
+                nextSteps.push(line.trim().substring(1).trim());
             }
         });
 
@@ -1109,6 +1245,16 @@ Analyze this decision and give a SPECIFIC recommendation from the options in the
         const decisionCount = getStoredDecisions().length + 1;
         const streakDays = 2; // TODO: Calculate actual streak
 
+        // Build next steps HTML if available
+        const nextStepsHTML = nextSteps.length > 0 ? `
+            <div class="next-steps-section">
+                <h3 class="next-steps-header">What to do now:</h3>
+                <ul class="next-steps-list">
+                    ${nextSteps.map(step => `<li>${step}</li>`).join('')}
+                </ul>
+            </div>
+        ` : '';
+
         contentEl.innerHTML = `
             <div class="quick-result-card">
                 <div class="quick-result-header">
@@ -1120,6 +1266,7 @@ Analyze this decision and give a SPECIFIC recommendation from the options in the
                 </div>
                 <p class="recommendation-reason">${reason}</p>
                 ${caveat ? `<p class="recommendation-caveat">${caveat}</p>` : ''}
+                ${nextStepsHTML}
                 ${!isGuestMode ? `
                 <div class="quick-result-streak">
                     <div class="streak-indicator">
@@ -1193,9 +1340,9 @@ Analyze this decision and give a SPECIFIC recommendation from the options in the
                 </div>
                 <div class="quick-result-recommendation">
                     <div class="recommendation-icon">✓</div>
-                    <h2 class="recommendation-text">Trust your instinct</h2>
+                    <h2 class="recommendation-text">Try again in a moment</h2>
                 </div>
-                <p class="recommendation-reason">You said ${quickDecisionState.matters} matters. Go with what feels right.</p>
+                <p class="recommendation-reason">We couldn't generate a recommendation right now. Please try again.</p>
             </div>
         `;
 
@@ -4816,7 +4963,7 @@ function updateGreeting() {
     if (hour >= 17) timeOfDay = 'evening';
 
     // Try multiple sources for the name
-    let name = 'there';
+    let name = null;
     if (window.userProfile?.first_name) {
         name = window.userProfile.first_name;
     } else if (window.supabaseClient?.getCurrentUser()?.user_metadata?.first_name) {
@@ -4826,7 +4973,8 @@ function updateGreeting() {
     console.log('[Greeting] userProfile:', window.userProfile);
     console.log('[Greeting] Using name:', name);
 
-    greetingEl.textContent = `Good ${timeOfDay}, ${name}`;
+    // Show just "Good morning" without name if no name available (not "Good morning, there")
+    greetingEl.textContent = name ? `Good ${timeOfDay}, ${name}` : `Good ${timeOfDay}`;
 }
 
 // Helper function: Update stats row
@@ -5090,14 +5238,19 @@ function renderDNACard(decisions) {
         return;
     }
 
-    // State A: Locked — progress card
-    const remaining = DNA_UNLOCK_THRESHOLD - decisionCount;
+    // State A: Building — progress card with friendlier messaging
     const progress = (decisionCount / DNA_UNLOCK_THRESHOLD) * 100;
     container.innerHTML = `
         <div class="dna-locked-card">
-            <div class="dna-locked-icon">🔒</div>
-            <h3>Your Decision DNA</h3>
-            <p>Make ${remaining} more decision${remaining > 1 ? 's' : ''} to unlock insights about how you think</p>
+            <div class="dna-locked-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+                    <path d="M12 6v6l4 2"/>
+                    <circle cx="12" cy="12" r="3" fill="currentColor" opacity="0.3"/>
+                </svg>
+            </div>
+            <h3>Your Decision DNA is building...</h3>
+            <p class="dna-subtitle">Each decision teaches us how you think</p>
             <div class="dna-progress-bar">
                 <div class="dna-progress-fill" style="width: ${progress}%"></div>
             </div>
@@ -7084,6 +7237,25 @@ function startGuestDecision() {
     clearDecisionForms();
 
     showPage('decision-type');
+}
+
+// Start Quick Guidance with a pre-filled prompt
+function startQuickWithPrompt(promptText) {
+    console.log('[QUICK] Starting with prompt:', promptText);
+
+    // Clear previous decision data
+    clearDecisionForms();
+
+    // Navigate to Quick Guidance Step 1
+    showPage('quick-1');
+
+    // Pre-fill the decision input
+    const decisionInput = document.getElementById('quick-decision-input');
+    if (decisionInput) {
+        decisionInput.value = promptText;
+        // Trigger input event to enable continue button
+        decisionInput.dispatchEvent(new Event('input'));
+    }
 }
 
 // Start another decision (from results page)
