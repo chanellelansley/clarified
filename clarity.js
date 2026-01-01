@@ -3,6 +3,55 @@
 // ============================================
 
 // ============================================
+// SENTRY ERROR TRACKING HELPERS
+// ============================================
+
+// Capture exception with context
+function captureError(error, context = {}) {
+    console.error('[Error]', error, context);
+    if (window.Sentry) {
+        Sentry.withScope(scope => {
+            Object.entries(context).forEach(([key, value]) => {
+                scope.setExtra(key, value);
+            });
+            Sentry.captureException(error);
+        });
+    }
+}
+
+// Capture a message/event
+function captureMessage(message, level = 'info', context = {}) {
+    console.log(`[${level}]`, message, context);
+    if (window.Sentry) {
+        Sentry.withScope(scope => {
+            Object.entries(context).forEach(([key, value]) => {
+                scope.setExtra(key, value);
+            });
+            Sentry.captureMessage(message, level);
+        });
+    }
+}
+
+// Set user context for Sentry
+function setSentryUser(user) {
+    if (window.Sentry && user) {
+        Sentry.setUser({
+            id: user.id,
+            email: user.email
+        });
+        console.log('[Sentry] User context set:', user.id);
+    }
+}
+
+// Clear user context on logout
+function clearSentryUser() {
+    if (window.Sentry) {
+        Sentry.setUser(null);
+        console.log('[Sentry] User context cleared');
+    }
+}
+
+// ============================================
 // GUEST MODE STATE MANAGEMENT
 // ============================================
 
@@ -814,6 +863,12 @@ async function callClaude(prompt, systemPrompt) {
         return data.content[0].text;
     } catch (error) {
         console.error(`[AI-${PROMPT_VERSION}] Error calling Claude:`, error);
+        captureError(error, {
+            component: 'callClaude',
+            promptVersion: PROMPT_VERSION,
+            systemPromptLength: systemPrompt?.length || 0,
+            userPromptLength: prompt?.length || 0
+        });
         throw error;
     }
 }
@@ -1337,6 +1392,12 @@ Analyze this decision and give a SPECIFIC recommendation from the options in the
         }
     } catch (error) {
         console.error('Error generating recommendation:', error);
+        captureError(error, {
+            component: 'generateQuickRecommendation',
+            decision: quickDecisionState.decision,
+            matters: quickDecisionState.matters,
+            emotion: quickDecisionState.emotion
+        });
         const decisionCount = getStoredDecisions().length + 1;
 
         contentEl.innerHTML = `
@@ -6946,6 +7007,7 @@ function signOut() {
         // Clear any stored data
         localStorage.clear();
         sessionStorage.clear();
+        clearSentryUser(); // Clear Sentry user context
 
         // Redirect to login page
         showPage('login');
@@ -7600,6 +7662,7 @@ async function signUpWithEmail(event) {
         }
     } catch (error) {
         console.error('[AUTH] Sign-up error:', error);
+        captureError(error, { component: 'signUpWithEmail', email: email });
         alert(`Sign-up failed: ${error.message}`);
     }
 }
@@ -7706,6 +7769,7 @@ async function signInWithEmail(event) {
             console.log('[AUTH] Sign-in successful:', data.user.id);
             currentUser = data.user;
             isGuestMode = false;
+            setSentryUser(data.user); // Set Sentry user context
 
             // Get user profile
             userProfile = await getOrCreateUserProfile(data.user);
@@ -7723,6 +7787,7 @@ async function signInWithEmail(event) {
         }
     } catch (error) {
         console.error('[AUTH] Sign-in error:', error);
+        captureError(error, { component: 'signInWithEmail', email: email });
         alert(`Sign-in failed: ${error.message}`);
     }
 }
@@ -7757,6 +7822,7 @@ async function signInWithGoogle() {
         // Redirect will happen automatically
     } catch (error) {
         console.error('[AUTH] Google sign-in error:', error);
+        captureError(error, { component: 'signInWithGoogle' });
         alert(`Google sign-in failed: ${error.message}`);
     }
 }
@@ -7766,6 +7832,7 @@ async function onSignUpComplete(user) {
     console.log('[AUTH] Completing sign-up for user:', user.id);
     currentUser = user;
     isGuestMode = false; // Critical: mark as authenticated user
+    setSentryUser(user); // Set Sentry user context
 
     try {
         // Extract first name if Google provided it
@@ -7928,6 +7995,7 @@ async function initApp() {
             console.log('[APP] User logged in:', session.user.id);
             currentUser = session.user;
             isGuestMode = false;
+            setSentryUser(session.user); // Set Sentry user context
 
             userProfile = await getOrCreateUserProfile(currentUser);
 
@@ -7970,6 +8038,7 @@ if (window.supabaseClient) {
             currentUser = null;
             userProfile = null;
             isGuestMode = true;
+            clearSentryUser(); // Clear Sentry user context
             showPage('landing');
         }
     });

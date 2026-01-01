@@ -6,6 +6,30 @@
     <title>Clarified — Stop overthinking</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+    <!-- Sentry Error Tracking (load first) -->
+    <script src="https://browser.sentry-cdn.com/7.119.0/bundle.min.js" crossorigin="anonymous"></script>
+    <script>
+        // Initialize Sentry early
+        if (window.Sentry) {
+            Sentry.init({
+                dsn: "https://37761e682f14197af93af63bafdc7d44@o4510637056196608.ingest.us.sentry.io/4510637059932161",
+                environment: window.location.hostname === 'localhost' ? 'development' : 'production',
+                tracesSampleRate: 0.1
+            });
+            console.log('[Sentry] Initialized');
+
+            // Test function - call window.testSentry() from console to verify
+            window.testSentry = function() {
+                try {
+                    throw new Error('Sentry test error - please ignore');
+                } catch (e) {
+                    Sentry.captureException(e);
+                    console.log('[Sentry] Test error sent! Check your Sentry dashboard.');
+                }
+            };
+        }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Newsreader:wght@400;500;600&display=swap" rel="stylesheet">
