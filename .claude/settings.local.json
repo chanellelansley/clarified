@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wc -l:*)",
+      "Bash(pkill:*)",
+      "Bash(node test-signup.js:*)",
+      "Bash(node debug-auth.js:*)",
+      "Bash(npm install:*)",
+      "Bash(node -c:*)",
+      "Bash(ls:*)",
+      "Bash(open -a \"Google Chrome\" http://localhost:3000)",
+      "Bash(lsof:*)",
+      "Bash(cat:*)",
+      "Bash(node /tmp/test-screening.js:*)",
+      "Bash(node:*)",
+      "Bash(grep:*)",
+      "Bash(awk 'NR==41{system\\(\"\"cat guest-onboarding-pages.html\"\"\\); print; next} {print}' clarity.html)",
+      "Bash(awk 'NR==2215{system\\(\"\"cat guest-onboarding-modals.html\"\"\\); print \"\"\"\"; print; next} {print}' clarity.html)",
+      "Bash(curl:*)",
+      "Bash(awk:*)"
+    ]
+  }
+}

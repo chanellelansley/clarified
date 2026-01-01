@@ -1,0 +1,522 @@
+/* ============================================
+   Premium Decision App Styles
+   Generous whitespace, muted palette, intentional pacing
+   ============================================ */
+
+:root {
+    /* Muted, calming palette */
+    --sage-green: #8B9D83;
+    --sage-light: #A8B89F;
+    --cream: #F5F3EE;
+    --warm-gray-100: #FAFAF9;
+    --warm-gray-200: #EDEAE5;
+    --warm-gray-300: #D4CFC7;
+    --warm-gray-700: #5A5450;
+    --warm-gray-900: #2C2826;
+    --shadow-soft: 0 2px 24px rgba(0, 0, 0, 0.04);
+    --shadow-elevated: 0 8px 48px rgba(0, 0, 0, 0.06);
+
+    /* Typography */
+    --font-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-weight-light: 300;
+    --font-weight-regular: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+
+    /* Spacing - generous! */
+    --space-xs: 0.5rem;
+    --space-sm: 1rem;
+    --space-md: 1.5rem;
+    --space-lg: 2.5rem;
+    --space-xl: 4rem;
+    --space-2xl: 6rem;
+
+    /* Border radius */
+    --radius-sm: 8px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+
+    /* Transitions - slow and intentional */
+    --transition-slow: 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-medium: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================
+   Reset & Base Styles
+   ============================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    font-family: var(--font-base);
+    font-weight: var(--font-weight-regular);
+    color: var(--warm-gray-900);
+    background: var(--cream);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* ============================================
+   Layout
+   ============================================ */
+
+.app {
+    min-height: 100vh;
+    position: relative;
+}
+
+.step {
+    min-height: 100vh;
+    display: none;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity var(--transition-slow), transform var(--transition-slow);
+}
+
+.step.active {
+    display: block;
+    animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.container {
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto;
+    padding: var(--space-xl) var(--space-md);
+}
+
+.content-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+
+/* ============================================
+   Typography
+   ============================================ */
+
+.step-title {
+    font-size: 2rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--warm-gray-900);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    margin-bottom: var(--space-sm);
+}
+
+.step-subtitle {
+    font-size: 1.125rem;
+    font-weight: var(--font-weight-light);
+    color: var(--warm-gray-700);
+    line-height: 1.6;
+}
+
+.progress-indicator {
+    font-size: 0.875rem;
+    font-weight: var(--font-weight-medium);
+    color: var(--sage-green);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: var(--space-md);
+}
+
+.input-label {
+    display: block;
+    font-size: 0.9375rem;
+    font-weight: var(--font-weight-medium);
+    color: var(--warm-gray-700);
+    margin-bottom: var(--space-sm);
+}
+
+.spacing-top {
+    margin-top: var(--space-xl);
+}
+
+/* ============================================
+   Cards
+   ============================================ */
+
+.input-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    box-shadow: var(--shadow-soft);
+    transition: box-shadow var(--transition-fast);
+    position: relative;
+}
+
+.input-card:focus-within {
+    box-shadow: var(--shadow-elevated);
+}
+
+.option-card {
+    background: white;
+    border: 2px solid transparent;
+    border-radius: var(--radius-md);
+    padding: var(--space-lg);
+    text-align: left;
+    cursor: pointer;
+    transition: all var(--transition-medium);
+    box-shadow: var(--shadow-soft);
+}
+
+.option-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-elevated);
+    border-color: var(--sage-light);
+}
+
+.option-card.selected {
+    border-color: var(--sage-green);
+    background: linear-gradient(135deg, rgba(139, 157, 131, 0.05) 0%, rgba(139, 157, 131, 0.02) 100%);
+}
+
+.option-card h3 {
+    font-size: 1.125rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--warm-gray-900);
+    margin-bottom: var(--space-xs);
+}
+
+.option-card p {
+    font-size: 0.9375rem;
+    font-weight: var(--font-weight-light);
+    color: var(--warm-gray-700);
+    line-height: 1.5;
+}
+
+.reflection-card,
+.summary-card,
+.recommendation-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    box-shadow: var(--shadow-elevated);
+    font-size: 1.0625rem;
+    line-height: 1.8;
+    color: var(--warm-gray-700);
+}
+
+/* ============================================
+   Form Elements
+   ============================================ */
+
+.decision-textarea {
+    width: 100%;
+    border: none;
+    outline: none;
+    font-family: var(--font-base);
+    font-size: 1.125rem;
+    font-weight: var(--font-weight-regular);
+    color: var(--warm-gray-900);
+    background: transparent;
+    resize: vertical;
+    line-height: 1.6;
+}
+
+.decision-textarea::placeholder {
+    color: var(--warm-gray-300);
+    font-weight: var(--font-weight-light);
+}
+
+.text-input {
+    width: 100%;
+    border: none;
+    outline: none;
+    font-family: var(--font-base);
+    font-size: 1rem;
+    font-weight: var(--font-weight-regular);
+    color: var(--warm-gray-900);
+    background: transparent;
+    padding: var(--space-sm) 0;
+}
+
+.text-input::placeholder {
+    color: var(--warm-gray-300);
+    font-weight: var(--font-weight-light);
+}
+
+.input-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: var(--space-md);
+}
+
+/* ============================================
+   Buttons
+   ============================================ */
+
+.primary-btn {
+    width: 100%;
+    padding: 1.125rem var(--space-lg);
+    background: var(--sage-green);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-family: var(--font-base);
+    font-size: 1.0625rem;
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: all var(--transition-medium);
+    box-shadow: var(--shadow-soft);
+}
+
+.primary-btn:hover {
+    background: var(--sage-light);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-elevated);
+}
+
+.primary-btn:active {
+    transform: translateY(0);
+}
+
+.secondary-btn {
+    padding: 1rem var(--space-lg);
+    background: transparent;
+    color: var(--warm-gray-700);
+    border: 2px solid var(--warm-gray-300);
+    border-radius: var(--radius-md);
+    font-family: var(--font-base);
+    font-size: 1rem;
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: all var(--transition-medium);
+}
+
+.secondary-btn:hover {
+    border-color: var(--sage-green);
+    color: var(--sage-green);
+    background: rgba(139, 157, 131, 0.05);
+}
+
+.icon-btn {
+    width: 44px;
+    height: 44px;
+    background: var(--warm-gray-100);
+    border: none;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    color: var(--warm-gray-700);
+}
+
+.icon-btn:hover {
+    background: var(--sage-light);
+    color: white;
+}
+
+.text-btn {
+    background: none;
+    border: none;
+    color: var(--warm-gray-700);
+    font-family: var(--font-base);
+    font-size: 0.9375rem;
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    padding: var(--space-sm);
+    margin-top: var(--space-md);
+    transition: color var(--transition-fast);
+}
+
+.text-btn:hover {
+    color: var(--sage-green);
+}
+
+.button-group {
+    display: flex;
+    gap: var(--space-md);
+}
+
+.button-group > * {
+    flex: 1;
+}
+
+/* ============================================
+   Grids
+   ============================================ */
+
+.options-grid {
+    display: grid;
+    gap: var(--space-md);
+    grid-template-columns: 1fr;
+}
+
+.reversibility-options {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.next-steps-options {
+    grid-template-columns: 1fr;
+}
+
+/* ============================================
+   Loading States
+   ============================================ */
+
+.thinking-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(245, 243, 238, 0.95);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity var(--transition-medium);
+}
+
+.thinking-overlay.active {
+    display: flex;
+    animation: fadeIn 0.4s forwards;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+.thinking-content {
+    text-align: center;
+}
+
+.thinking-dots {
+    display: flex;
+    gap: var(--space-xs);
+    justify-content: center;
+    margin-bottom: var(--space-md);
+}
+
+.thinking-dots span {
+    width: 12px;
+    height: 12px;
+    background: var(--sage-green);
+    border-radius: 50%;
+    animation: bounce 1.4s infinite ease-in-out;
+}
+
+.thinking-dots span:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.thinking-dots span:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+@keyframes bounce {
+    0%, 80%, 100% {
+        transform: scale(0.8);
+        opacity: 0.5;
+    }
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.thinking-text {
+    font-size: 1rem;
+    font-weight: var(--font-weight-light);
+    color: var(--warm-gray-700);
+}
+
+/* ============================================
+   Animations
+   ============================================ */
+
+.fade-in {
+    animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.fade-in-delay-1 {
+    opacity: 0;
+    animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards;
+}
+
+.fade-in-delay-2 {
+    opacity: 0;
+    animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.4s forwards;
+}
+
+.fade-in-delay-3 {
+    opacity: 0;
+    animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.6s forwards;
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+
+@media (min-width: 640px) {
+    .step-title {
+        font-size: 2.5rem;
+    }
+
+    .container {
+        padding: var(--space-2xl) var(--space-lg);
+    }
+
+    .options-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+}
+
+@media (min-width: 1024px) {
+    .container {
+        max-width: 720px;
+    }
+
+    .button-group {
+        justify-content: flex-end;
+    }
+
+    .button-group > * {
+        flex: 0 0 auto;
+        min-width: 160px;
+    }
+}
+
+/* ============================================
+   Accessibility
+   ============================================ */
+
+.option-card:focus-visible,
+.primary-btn:focus-visible,
+.secondary-btn:focus-visible,
+.icon-btn:focus-visible {
+    outline: 3px solid var(--sage-green);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

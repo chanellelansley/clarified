@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clarity — Decision Assistant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="decision-app.css">
+</head>
+<body>
+    <div class="app">
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <div class="progress-steps">
+                <div class="progress-step active" data-step="1">1</div>
+                <div class="progress-step" data-step="2">2</div>
+                <div class="progress-step" data-step="3">3</div>
+                <div class="progress-step" data-step="4">4</div>
+                <div class="progress-step" data-step="5">5</div>
+                <div class="progress-step" data-step="6">6</div>
+            </div>
+        </div>
+
+        <!-- Step 1: Decision Entry -->
+        <div class="step active" id="step-1">
+            <div class="container">
+                <h1 class="step-title">What decision are you facing?</h1>
+                <p class="step-description">Describe it in your own words. Don't worry about getting it perfect.</p>
+
+                <div class="card">
+                    <textarea
+                        id="decision-input"
+                        class="textarea-large"
+                        placeholder="Should I accept the job offer in another city..."
+                        rows="4"
+                    ></textarea>
+                </div>
+
+                <button class="btn-primary" id="continue-step-1">Continue</button>
+            </div>
+        </div>
+
+        <!-- Step 1b: Reframing (NEW) -->
+        <div class="step" id="step-1b">
+            <div class="container">
+                <h2 class="step-title">Before we dive in—is this the question you're really asking?</h2>
+                <p class="step-description">Sometimes reframing helps us see what we're truly deciding.</p>
+
+                <div class="original-decision card">
+                    <p class="label">Your original question:</p>
+                    <p id="original-question"></p>
+                </div>
+
+                <div class="reframe-options" id="reframe-options">
+                    <!-- AI-generated reframes will populate here -->
+                </div>
+
+                <div class="card">
+                    <input
+                        type="text"
+                        id="custom-reframe"
+                        class="text-input"
+                        placeholder="Or write your own version..."
+                    >
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Set the Stage -->
+        <div class="step" id="step-2">
+            <div class="container">
+                <h2 class="step-title">Let's set the stage</h2>
+                <p class="step-description">Help me understand your situation.</p>
+
+                <div class="question-group">
+                    <label class="label">What are your main options?</label>
+                    <div class="card">
+                        <input type="text" class="text-input option-input" placeholder="Option 1" data-option="1">
+                    </div>
+                    <div class="card">
+                        <input type="text" class="text-input option-input" placeholder="Option 2" data-option="2">
+                    </div>
+                    <button class="btn-text" id="add-option">+ Add another option</button>
+                </div>
+
+                <div class="question-group">
+                    <label class="label">When do you need to decide?</label>
+                    <div class="card">
+                        <select id="timeline-select" class="select-input">
+                            <option value="">Choose timeline...</option>
+                            <option value="urgent">This week</option>
+                            <option value="soon">Within a month</option>
+                            <option value="flexible">A few months</option>
+                            <option value="open">No specific deadline</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="question-group">
+                    <label class="label">What category best fits this decision?</label>
+                    <div class="chip-grid" id="category-chips">
+                        <button class="chip" data-category="career">Career</button>
+                        <button class="chip" data-category="relationship">Relationship</button>
+                        <button class="chip" data-category="finance">Finance</button>
+                        <button class="chip" data-category="health">Health</button>
+                        <button class="chip" data-category="education">Education</button>
+                        <button class="chip" data-category="lifestyle">Lifestyle</button>
+                        <button class="chip" data-category="other">Other</button>
+                    </div>
+                </div>
+
+                <button class="btn-primary" id="continue-step-2">Continue</button>
+            </div>
+        </div>
+
+        <!-- Step 3: Values -->
+        <div class="step" id="step-3">
+            <div class="container">
+                <h2 class="step-title">What matters most to you in this decision?</h2>
+                <p class="step-description">Select all that apply. These will help guide your choice.</p>
+
+                <div class="chip-grid" id="values-chips">
+                    <!-- Will be populated based on category -->
+                </div>
+
+                <button class="btn-primary" id="continue-step-3">Continue</button>
+            </div>
+        </div>
+
+        <!-- Step 4: Assumptions (NEW) -->
+        <div class="step" id="step-4">
+            <div class="container">
+                <h2 class="step-title">What are you assuming about each option?</h2>
+                <p class="step-description">What if you're wrong?</p>
+
+                <div class="card">
+                    <textarea
+                        id="assumptions-input"
+                        class="textarea-large"
+                        placeholder="I'm assuming that if I choose option A, then..."
+                        rows="5"
+                    ></textarea>
+                </div>
+
+                <button class="btn-primary" id="continue-step-4">Continue</button>
+            </div>
+        </div>
+
+        <!-- Step 5: What Makes This Difficult -->
+        <div class="step" id="step-5">
+            <div class="container">
+                <h2 class="step-title">What's making this decision difficult?</h2>
+                <p class="step-description">Select the main challenges you're facing.</p>
+
+                <div class="chip-grid" id="difficulty-chips">
+                    <button class="chip" data-difficulty="fear">Fear of making the wrong choice</button>
+                    <button class="chip" data-difficulty="pressure">External pressure</button>
+                    <button class="chip" data-difficulty="tradeoffs">Difficult tradeoffs</button>
+                    <button class="chip" data-difficulty="uncertainty">Too much uncertainty</button>
+                    <button class="chip" data-difficulty="conflicting">Conflicting values</button>
+                    <button class="chip" data-difficulty="reversibility">Hard to reverse</button>
+                </div>
+
+                <!-- Follow-up question (NEW) -->
+                <div class="follow-up" id="difficulty-followup" style="display: none;">
+                    <label class="label" id="followup-label"></label>
+                    <div class="card">
+                        <textarea
+                            id="difficulty-detail"
+                            class="textarea-large"
+                            placeholder="Tell me more..."
+                            rows="3"
+                        ></textarea>
+                    </div>
+                </div>
+
+                <button class="btn-primary" id="continue-step-5">Continue</button>
+            </div>
+        </div>
+
+        <!-- Step 6: Confirmation (NEW) -->
+        <div class="step" id="step-6">
+            <div class="container">
+                <h2 class="step-title">Here's what I heard</h2>
+                <p class="step-description">Does this capture your situation?</p>
+
+                <div class="card summary-card" id="summary-card">
+                    <!-- AI-generated summary will populate here -->
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-secondary" id="adjust-summary">Let me adjust</button>
+                    <button class="btn-primary" id="confirm-summary">That's right</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Page -->
+        <div class="step" id="results">
+            <div class="container">
+                <h1 class="results-title">What aligns with your values</h1>
+                <p class="results-subtitle">Based on what you've shared</p>
+
+                <!-- Recommendation Card -->
+                <div class="card recommendation-card" id="recommendation-content">
+                    <!-- AI-generated recommendation will populate here -->
+                </div>
+
+                <div class="card gut-check">
+                    <label class="label">What's your gut telling you?</label>
+                    <textarea
+                        id="gut-response"
+                        class="textarea-large"
+                        placeholder="When I read this..."
+                        rows="3"
+                    ></textarea>
+                </div>
+
+                <!-- Comparison Table -->
+                <div class="section">
+                    <h3 class="section-title">Comparing your options</h3>
+                    <div class="comparison-table" id="comparison-table">
+                        <!-- Will be populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Tradeoffs -->
+                <div class="section">
+                    <h3 class="section-title">Key tradeoffs</h3>
+                    <div class="card" id="tradeoffs-content">
+                        <!-- Will be populated by AI -->
+                    </div>
+                </div>
+
+                <!-- Risks -->
+                <div class="section">
+                    <h3 class="section-title">Potential risks</h3>
+                    <div class="card" id="risks-content">
+                        <!-- Will be populated by AI -->
+                    </div>
+                </div>
+
+                <button class="btn-primary" id="start-over">Make another decision</button>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loading-overlay">
+            <div class="loading-content">
+                <div class="spinner"></div>
+                <p class="loading-text">Analyzing your decision...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="decision-app.js"></script>
+</body>
+</html>

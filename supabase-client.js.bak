@@ -1,0 +1,333 @@
+// ============================================
+// SUPABASE CLIENT INITIALIZATION
+// ============================================
+
+let supabaseClient = null;
+let currentUser = null;
+
+// Initialize Supabase client
+async function initSupabase() {
+    try {
+        // Fetch Supabase config from server
+        const response = await fetch('/api/config');
+        const config = await response.json();
+
+        if (!config.supabase.url || !config.supabase.anonKey) {
+            console.warn('Supabase not configured. Using localStorage fallback.');
+            return false;
+        }
+
+        // Initialize Supabase client
+        supabaseClient = window.supabase.createClient(
+            config.supabase.url,
+            config.supabase.anonKey
+        );
+
+        console.log('✅ Supabase initialized');
+
+        // Check for existing session
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session) {
+            currentUser = session.user;
+            console.log('✅ User already logged in:', currentUser.email);
+            onAuthStateChange(currentUser);
+        }
+
+        // Listen for auth changes
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            console.log('Auth state changed:', event);
+            currentUser = session?.user || null;
+            onAuthStateChange(currentUser);
+        });
+
+        return true;
+    } catch (error) {
+        console.error('Failed to initialize Supabase:', error);
+        return false;
+    }
+}
+
+// Handle auth state changes
+function onAuthStateChange(user) {
+    if (user) {
+        // User logged in
+        appState.user.email = user.email;
+        appState.user.id = user.id;
+        appState.isGuest = false;
+
+        // Update UI
+        updateAuthUI(true);
+
+        // Load user's decisions from database
+        loadDecisionsFromDatabase();
+    } else {
+        // User logged out
+        appState.user.email = null;
+        appState.user.id = null;
+        appState.isGuest = true;
+
+        // Update UI
+        updateAuthUI(false);
+
+        // Show login page
+        showPage('login');
+    }
+}
+
+// Update UI based on auth state
+function updateAuthUI(isLoggedIn) {
+    // Update nav/header to show user email or login button
+    const authButton = document.getElementById('auth-button');
+    if (authButton) {
+        if (isLoggedIn) {
+            authButton.textContent = currentUser.email;
+            authButton.onclick = () => showAccountMenu();
+        } else {
+            authButton.textContent = 'Sign In';
+            authButton.onclick = () => showPage('login');
+        }
+    }
+}
+
+// ============================================
+// AUTH FUNCTIONS
+// ============================================
+
+async function signUp(email, password) {
+    if (!supabaseClient) {
+        return {
+            success: false,
+            error: 'Supabase not configured. Please set up your Supabase credentials in the .env file. See QUICK_START.md for instructions.'
+        };
+    }
+
+    try {
+        const { data, error } = await supabaseClient.auth.signUp({
+            email: email,
+            password: password
+        });
+
+        if (error) throw error;
+
+        console.log('✅ Sign up successful');
+        return { success: true, data };
+    } catch (error) {
+        console.error('Sign up error:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+async function signIn(email, password) {
+    if (!supabaseClient) {
+        return {
+            success: false,
+            error: 'Supabase not configured. Please set up your Supabase credentials in the .env file. See QUICK_START.md for instructions.'
+        };
+    }
+
+    try {
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+            email: email,
+            password: password
+        });
+
+        if (error) throw error;
+
+        console.log('✅ Sign in successful');
+        currentUser = data.user;
+        return { success: true, data };
+    } catch (error) {
+        console.error('Sign in error:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+async function signOut() {
+    try {
+        const { error } = await supabaseClient.auth.signOut();
+        if (error) throw error;
+
+        console.log('✅ Signed out');
+        currentUser = null;
+        return { success: true };
+    } catch (error) {
+        console.error('Sign out error:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+// ============================================
+// DATABASE FUNCTIONS
+// ============================================
+
+async function saveDecisionToDatabase(decisionData) {
+    if (!supabaseClient || !currentUser) {
+        console.warn('Not logged in, cannot save to database');
+        return null;
+    }
+
+    try {
+        const { data, error } = await supabase
+            .from('decisions')
+            .insert({
+                user_id: currentUser.id,
+                question: decisionData.decision,
+                reframed_question: decisionData.reframedQuestion,
+                category: decisionData.category,
+                options: decisionData.options,
+                values: decisionData.values,
+                challenges: decisionData.difficulties || [],
+                assumptions: decisionData.assumptions,
+                significance: decisionData.significance,
+                timeline: decisionData.timeline,
+                recommendation: decisionData.recommendationData
+            })
+            .select()
+            .single();
+
+        if (error) throw error;
+
+        console.log('✅ Decision saved to database:', data.id);
+        return data.id;
+    } catch (error) {
+        console.error('Error saving decision:', error);
+        return null;
+    }
+}
+
+async function loadDecisionsFromDatabase() {
+    if (!supabaseClient || !currentUser) {
+        console.warn('Not logged in, cannot load from database');
+        return [];
+    }
+
+    try {
+        const { data, error } = await supabase
+            .from('decisions')
+            .select('*, outcomes(*)')
+            .eq('user_id', currentUser.id)
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        console.log(`✅ Loaded ${data.length} decisions from database`);
+        return data;
+    } catch (error) {
+        console.error('Error loading decisions:', error);
+        return [];
+    }
+}
+
+async function saveOutcomeToDatabase(decisionId, outcomeData) {
+    if (!supabaseClient || !currentUser) {
+        console.warn('Not logged in, cannot save outcome');
+        return null;
+    }
+
+    try {
+        const { data, error } = await supabase
+            .from('outcomes')
+            .insert({
+                decision_id: decisionId,
+                user_id: currentUser.id,
+                choice_made: outcomeData.userChoice,
+                reflection: outcomeData.userReflection
+            })
+            .select()
+            .single();
+
+        if (error) throw error;
+
+        console.log('✅ Outcome saved to database');
+        return data.id;
+    } catch (error) {
+        console.error('Error saving outcome:', error);
+        return null;
+    }
+}
+
+async function getDecisionById(decisionId) {
+    if (!supabaseClient || !currentUser) {
+        console.warn('Not logged in, cannot fetch decision');
+        return null;
+    }
+
+    try {
+        const { data, error } = await supabase
+            .from('decisions')
+            .select('*, outcomes(*)')
+            .eq('id', decisionId)
+            .eq('user_id', currentUser.id)
+            .single();
+
+        if (error) throw error;
+
+        return data;
+    } catch (error) {
+        console.error('Error fetching decision:', error);
+        return null;
+    }
+}
+
+// ============================================
+// MIGRATION FROM LOCALSTORAGE
+// ============================================
+
+async function migrateLocalStorageToSupabase() {
+    if (!supabaseClient || !currentUser) return;
+
+    try {
+        // Get localStorage decisions
+        const localDecisions = getStoredDecisions();
+        if (localDecisions.length === 0) {
+            console.log('No localStorage decisions to migrate');
+            return;
+        }
+
+        console.log(`Found ${localDecisions.length} decisions in localStorage`);
+
+        // Ask user if they want to migrate
+        const shouldMigrate = confirm(
+            `Would you like to sync ${localDecisions.length} decision(s) from this device to your account?`
+        );
+
+        if (!shouldMigrate) return;
+
+        // Migrate each decision
+        let successCount = 0;
+        for (const decision of localDecisions) {
+            const saved = await saveDecisionToDatabase(decision);
+            if (saved) successCount++;
+        }
+
+        console.log(`✅ Migrated ${successCount}/${localDecisions.length} decisions`);
+        alert(`Synced ${successCount} decision(s) to your account!`);
+
+        // Clear localStorage after successful migration
+        if (successCount > 0) {
+            const clearLocal = confirm('Clear local storage now that data is synced?');
+            if (clearLocal) {
+                localStorage.removeItem('clarifiedDecisions');
+            }
+        }
+    } catch (error) {
+        console.error('Migration error:', error);
+    }
+}
+
+// Make functions globally available
+window.supabaseClient = {
+    initSupabase,
+    signUp,
+    signIn,
+    signOut,
+    saveDecisionToDatabase,
+    loadDecisionsFromDatabase,
+    saveOutcomeToDatabase,
+    getDecisionById,
+    migrateLocalStorageToSupabase,
+    getCurrentUser: () => currentUser,
+    getSupabase: () => supabase
+};
+
+console.log('✅ supabase-client.js loaded, window.supabaseClient is available');

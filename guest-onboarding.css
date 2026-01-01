@@ -1,0 +1,484 @@
+/* ============================================
+   GUEST ONBOARDING STYLES
+   Append to clarity.css or include separately
+   ============================================ */
+
+/* Landing Page */
+.landing-container {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(180deg, #F0F9F6 0%, #FFFFFF 50%);
+}
+
+.landing-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    max-width: 400px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.landing-logo {
+    margin-bottom: 40px;
+}
+
+.landing-content h1 {
+    font-family: 'Newsreader', Georgia, serif;
+    font-size: 36px;
+    font-weight: 500;
+    line-height: 1.2;
+    margin-bottom: 16px;
+    color: #111827;
+}
+
+.landing-subtitle {
+    font-size: 18px;
+    color: #6B7280;
+    line-height: 1.5;
+    margin-bottom: 40px;
+}
+
+.btn-large {
+    padding: 16px 32px;
+    font-size: 17px;
+}
+
+.landing-signin {
+    margin-top: 24px;
+    font-size: 14px;
+    color: #6B7280;
+}
+
+.landing-signin a {
+    color: #418F6F;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.landing-signin a:hover {
+    text-decoration: underline;
+}
+
+.landing-footer {
+    padding: 24px;
+    text-align: center;
+}
+
+.landing-footer p {
+    font-size: 13px;
+    color: #9CA3AF;
+}
+
+/* Auth Container (shared for sign-in and sign-up) */
+.auth-container {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: #FAFAFA;
+}
+
+.back-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: none;
+    border: none;
+    color: #6B7280;
+    font-size: 15px;
+    cursor: pointer;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.back-btn:hover {
+    color: #111827;
+}
+
+.auth-content {
+    width: 100%;
+    max-width: 400px;
+    background: white;
+    padding: 40px 32px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.auth-content h1 {
+    font-family: 'Newsreader', Georgia, serif;
+    font-size: 28px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: #111827;
+    text-align: center;
+}
+
+.auth-subtitle {
+    font-size: 15px;
+    color: #6B7280;
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.btn-google {
+    width: 100%;
+    padding: 12px;
+    background: white;
+    border: 1.5px solid #D1D5DB;
+    border-radius: 8px;
+    color: #374151;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    transition: all 0.2s;
+    margin-bottom: 20px;
+}
+
+.btn-google:hover {
+    background: #F9FAFB;
+    border-color: #9CA3AF;
+}
+
+.google-icon {
+    flex-shrink: 0;
+}
+
+.auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 24px 0;
+    color: #9CA3AF;
+    font-size: 13px;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #E5E7EB;
+}
+
+.auth-content form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.input-field {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid #D1D5DB;
+    border-radius: 8px;
+    font-size: 15px;
+    color: #111827;
+    background: white;
+    transition: border-color 0.2s;
+}
+
+.input-field:focus {
+    outline: none;
+    border-color: #418F6F;
+}
+
+.input-field::placeholder {
+    color: #9CA3AF;
+}
+
+.auth-switch {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 14px;
+    color: #6B7280;
+}
+
+.auth-switch a {
+    color: #418F6F;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.auth-switch a:hover {
+    text-decoration: underline;
+}
+
+.auth-terms {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 12px;
+    color: #9CA3AF;
+    line-height: 1.5;
+}
+
+.auth-terms a {
+    color: #6B7280;
+    text-decoration: underline;
+}
+
+/* Post-Signup Onboarding */
+.onboarding-container {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    background: #FAFAFA;
+}
+
+.onboarding-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.onboarding-progress {
+    display: flex;
+    gap: 8px;
+}
+
+.progress-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #D1D5DB;
+    transition: background 0.3s;
+}
+
+.progress-dot.active {
+    background: #418F6F;
+}
+
+.progress-dot.complete {
+    background: #10B981;
+}
+
+.skip-btn {
+    background: none;
+    border: none;
+    color: #6B7280;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 4px 8px;
+}
+
+.skip-btn:hover {
+    color: #111827;
+}
+
+.onboarding-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    max-width: 440px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.welcome-checkmark {
+    width: 80px;
+    height: 80px;
+    background: #D1FAE5;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.onboarding-content h1 {
+    font-family: 'Newsreader', Georgia, serif;
+    font-size: 32px;
+    font-weight: 500;
+    margin-bottom: 12px;
+    color: #111827;
+    text-align: center;
+}
+
+.onboarding-subtitle {
+    font-size: 16px;
+    color: #6B7280;
+    text-align: center;
+    margin-bottom: 32px;
+    line-height: 1.5;
+}
+
+.name-input-group {
+    width: 100%;
+    margin-bottom: 24px;
+}
+
+.onboarding-options {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 32px;
+}
+
+.option-card {
+    width: 100%;
+    padding: 16px 20px;
+    background: white;
+    border: 2px solid #E5E7EB;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+}
+
+.option-card:hover {
+    border-color: #418F6F;
+    background: #F9FAFB;
+}
+
+.option-card input[type="radio"] {
+    display: none;
+}
+
+.option-card input[type="radio"]:checked + .option-content {
+    color: #111827;
+}
+
+.option-card:has(input[type="radio"]:checked) {
+    border-color: #418F6F;
+    background: #F0F9F6;
+}
+
+.option-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+    color: #6B7280;
+}
+
+.option-emoji {
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.option-text {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* Save Prompt Modal */
+.save-prompt-modal .modal-content {
+    max-width: 400px;
+    text-align: center;
+    padding: 40px 32px;
+}
+
+.save-prompt-icon {
+    width: 64px;
+    height: 64px;
+    background: #F0F9F6;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+}
+
+.save-prompt-icon svg {
+    color: #418F6F;
+}
+
+.save-prompt-modal h2 {
+    font-family: 'Newsreader', Georgia, serif;
+    font-size: 24px;
+    margin-bottom: 12px;
+    color: #111827;
+}
+
+.save-prompt-text {
+    font-size: 16px;
+    color: #6B7280;
+    line-height: 1.5;
+    margin-bottom: 24px;
+}
+
+.save-prompt-benefits {
+    text-align: left;
+    margin-bottom: 28px;
+}
+
+.benefit-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    font-size: 15px;
+    color: #374151;
+}
+
+.benefit-icon {
+    width: 22px;
+    height: 22px;
+    background: #D1FAE5;
+    color: #059669;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.btn-text {
+    background: none;
+    border: none;
+    color: #6B7280;
+    font-size: 15px;
+    padding: 12px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 8px;
+}
+
+.btn-text:hover {
+    color: #374151;
+}
+
+.save-prompt-note {
+    font-size: 12px;
+    color: #9CA3AF;
+    margin-top: 20px;
+    margin-bottom: 0;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .landing-content h1 {
+        font-size: 30px;
+    }
+
+    .landing-subtitle {
+        font-size: 16px;
+    }
+
+    .onboarding-content h1 {
+        font-size: 28px;
+    }
+}

@@ -1,0 +1,69 @@
+<!-- ============================================
+     GUEST ONBOARDING MODALS
+     Insert these with the other modals (before footer)
+     ============================================ -->
+
+<!-- Save Prompt Modal (for guests after Quick Guidance) -->
+<div class="modal save-prompt-modal" id="save-prompt-modal">
+    <div class="modal-content save-prompt-content">
+        <div class="save-prompt-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
+        </div>
+
+        <h2>Save your clarity</h2>
+        <p class="save-prompt-text">Create a free account to save this decision and track patterns over time.</p>
+
+        <div class="save-prompt-benefits">
+            <div class="benefit-item">
+                <span class="benefit-icon">✓</span>
+                <span>Save this decision</span>
+            </div>
+            <div class="benefit-item">
+                <span class="benefit-icon">✓</span>
+                <span>Track outcomes over time</span>
+            </div>
+            <div class="benefit-item">
+                <span class="benefit-icon">✓</span>
+                <span>Discover your decision patterns</span>
+            </div>
+        </div>
+
+        <button class="btn btn-primary btn-full" onclick="showSignUpFromSavePrompt(); return false;">
+            Create free account
+        </button>
+
+        <button class="btn-text" onclick="dismissSavePrompt(); return false;">
+            Maybe later
+        </button>
+
+        <p class="save-prompt-note">5 free decisions/month • No credit card needed</p>
+    </div>
+</div>
+
+<!-- Deep Guidance Sign-up Prompt Modal (for guests trying to access Deep Guidance) -->
+<div class="modal" id="deep-guidance-signup-modal">
+    <div class="modal-content" style="max-width: 400px; text-align: center; padding: 32px;">
+        <div class="modal-icon" style="width: 64px; height: 64px; background: #F0F9F6; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#418F6F" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+        </div>
+
+        <h2>Deep Guidance requires an account</h2>
+        <p style="color: #6B7280; margin-bottom: 24px; line-height: 1.6;">Create a free account to access our full decision framework with values mapping, option scoring, and more.</p>
+
+        <button class="btn btn-primary btn-full" onclick="closeModal('deep-guidance-signup-modal'); showPage('signup'); return false;">
+            Create free account
+        </button>
+
+        <button class="btn-text" onclick="closeModal('deep-guidance-signup-modal'); selectDecisionType('quick'); return false;">
+            Use Quick Guidance instead
+        </button>
+    </div>
+</div>

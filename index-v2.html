@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clarity — Find Your Answer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles-v2.css">
+</head>
+<body>
+    <div class="app">
+        <!-- Step 1: Initial Question -->
+        <div class="step active" id="step-1">
+            <div class="container">
+                <div class="content-wrapper">
+                    <h1 class="step-title fade-in">What's on your mind?</h1>
+                    <p class="step-subtitle fade-in-delay-1">Take your time. There's no rush.</p>
+
+                    <div class="input-card fade-in-delay-2">
+                        <textarea
+                            id="decision-input"
+                            class="decision-textarea"
+                            placeholder="Should I move to a new city for work..."
+                            rows="4"
+                        ></textarea>
+                        <div class="input-actions">
+                            <button class="icon-btn" id="voice-btn" aria-label="Voice input">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                                    <line x1="12" y1="19" x2="12" y2="23"></line>
+                                    <line x1="8" y1="23" x2="16" y2="23"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button class="primary-btn fade-in-delay-3" id="continue-step-1">
+                        Continue
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Reframing -->
+        <div class="step" id="step-2">
+            <div class="container">
+                <div class="content-wrapper">
+                    <div class="progress-indicator">Step 2 of 12</div>
+                    <h2 class="step-title">Before we go deeper—is this the real question?</h2>
+                    <p class="step-subtitle">Sometimes what we ask isn't quite what we mean.</p>
+
+                    <div class="options-grid" id="reframe-options">
+                        <!-- AI-generated options will populate here -->
+                    </div>
+
+                    <div class="input-card">
+                        <input
+                            type="text"
+                            class="text-input"
+                            id="custom-reframe"
+                            placeholder="Or phrase it your own way..."
+                        >
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Urgency -->
+        <div class="step" id="step-3">
+            <div class="container">
+                <div class="content-wrapper">
+                    <div class="progress-indicator">Step 3 of 12</div>
+                    <h2 class="step-title">What's making this feel urgent right now?</h2>
+                    <p class="step-subtitle">Not the whole story—just what's present.</p>
+
+                    <div class="input-card">
+                        <textarea
+                            id="urgency-input"
+                            class="decision-textarea"
+                            placeholder="I need to decide by Friday..."
+                            rows="4"
+                        ></textarea>
+                    </div>
+
+                    <button class="primary-btn" id="continue-step-3">
+                        Continue
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 4: Reflection -->
+        <div class="step" id="step-4">
+            <div class="container">
+                <div class="content-wrapper">
+                    <div class="progress-indicator">Step 4 of 12</div>
+                    <h2 class="step-title">Here's what I'm hearing</h2>
+
+                    <div class="reflection-card" id="reflection-content">
+                        <!-- AI reflection will populate here -->
+                    </div>
+
+                    <div class="button-group">
+                        <button class="secondary-btn" id="adjust-reflection">
+                            Let me adjust
+                        </button>
+                        <button class="primary-btn" id="confirm-reflection">
+                            That's right
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 5: Values -->
+        <div class="step" id="step-5">
+            <div class="container">
+                <div class="content-wrapper">
+                    <div class="progress-indicator">Step 5 of 12</div>
+                    <h2 class="step-title">A year from now, what would make you say you chose well?</h2>
+
+                    <div class="input-card">
+                        <textarea
+                            id="values-input-1"
+                            class="decision-textarea"
+                            placeholder="I'd feel..."
+                            rows="3"
+                        ></textarea>
+                    </div>
+
+                    <h2 class="step-title spacing-top">What else matters? What would you hate to lose?</h2>
+
+                    <div class="input-card">
+                        <textarea
+                            id="values-input-2"
+                            class="decision-textarea"
+                            placeholder="I couldn't stand..."
+                            rows="3"
+                        ></textarea>
+                    </div>
+
+                    <button class="primary-btn" id="continue-step-5">
+                        Continue
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 6: Alternatives -->
+        <div class="step" id="step-6">
+            <div class="container">
+                <div class="content-wrapper">
+                    <div class="progress-indicator">Step 6 of 12</div>
+                    <h2 class="step-title">Have you considered all your options?</h2>
+                    <p class="step-subtitle">Sometimes there are more paths than we first see.</p>
+
+                    <div class="options-grid" id="alternatives-options">
+                        <!-- AI-generated alternatives will populate here -->
+                    </div>
+
+                    <div class="input-card">
+                        <input
+                            type="text"
+                            class="text-input"
+                            id="add-alternative"
+                            placeholder="Add another option..."
+                        >
+                    </div>
+
+                    <button class="primary-btn" id="continue-step-6">
+                        These are my options
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 7: Assumptions -->
+        <div class="step" id="step-7">
+            <div class="container">
+                <div class="content-wrapper">
+                    <div class="progress-indicator">Step 7 of 12</div>
+                    <h2 class="step-title">What are you assuming about each path?</h2>
+                    <p class="step-subtitle">Where might you be wrong?</p>
+
+                    <div class="input-card">
+                        <textarea
+                            id="assumptions-input"
+                            class="decision-textarea"
+                            placeholder="I'm assuming that if I..."
+                            rows="4"
+                        ></textarea>
+                    </div>
+
+                    <button class="primary-btn" id="continue-step-7">
+                        Continue
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 8: Bias Check -->
+        <div class="step" id="step-8">
+            <div class="container">
+                <div class="content-wrapper">
+                    <div class="progress-indicator">Step 8 of 12</div>
+                    <h2 class="step-title">Is something outside you influencing this?</h2>
+                    <p class="step-subtitle">What's the fear underneath?</p>
+
+                    <div class="input-card">
+                        <textarea
+                            id="bias-input"
+                            class="decision-textarea"
+                            placeholder="I'm worried about what..."
+                            rows="4"
+                        ></textarea>
+                    </div>
+
+                    <button class="primary-btn" id="continue-step-8">
+                        Continue
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 9: Reversibility -->
+        <div class="step" id="step-9">
+            <div class="container">
+                <div class="content-wrapper">
+                    <div class="progress-indicator">Step 9 of 12</div>
+                    <h2 class="step-title">If this doesn't work, how hard is it to change course?</h2>
+
+                    <div class="options-grid reversibility-options">
+                        <button class="option-card" data-reversibility="easy">
+                            <h3>Easy to reverse</h3>
+                            <p>Can undo within days or weeks</p>
+                        </button>
+                        <button class="option-card" data-reversibility="moderate">
+                            <h3>Moderately reversible</h3>
+                            <p>Would take months to change</p>
+                        </button>
+                        <button class="option-card" data-reversibility="difficult">
+                            <h3>Difficult to reverse</h3>
+                            <p>Would take years or significant cost</p>
+                        </button>
+                        <button class="option-card" data-reversibility="permanent">
+                            <h3>Mostly permanent</h3>
+                            <p>Can't meaningfully undo</p>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 10: Summary -->
+        <div class="step" id="step-10">
+            <div class="container">
+                <div class="content-wrapper">
+                    <div class="progress-indicator">Step 10 of 12</div>
+                    <h2 class="step-title">Does this capture it?</h2>
+
+                    <div class="summary-card" id="summary-content">
+                        <!-- AI-generated summary will populate here -->
+                    </div>
+
+                    <div class="button-group">
+                        <button class="secondary-btn" id="adjust-summary">
+                            Something's off
+                        </button>
+                        <button class="primary-btn" id="confirm-summary">
+                            Yes, this is it
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 11: Recommendation -->
+        <div class="step" id="step-11">
+            <div class="container">
+                <div class="content-wrapper">
+                    <div class="progress-indicator">Step 11 of 12</div>
+                    <h2 class="step-title">Here's what seems to fit</h2>
+
+                    <div class="recommendation-card" id="recommendation-content">
+                        <!-- AI recommendation will populate here -->
+                    </div>
+
+                    <div class="input-card">
+                        <label class="input-label">What does your gut say?</label>
+                        <textarea
+                            id="gut-response"
+                            class="decision-textarea"
+                            placeholder="When I read this, I feel..."
+                            rows="3"
+                        ></textarea>
+                    </div>
+
+                    <button class="primary-btn" id="continue-step-11">
+                        Continue
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 12: Next Steps -->
+        <div class="step" id="step-12">
+            <div class="container">
+                <div class="content-wrapper">
+                    <div class="progress-indicator">Final step</div>
+                    <h2 class="step-title">What feels right next?</h2>
+
+                    <div class="options-grid next-steps-options">
+                        <button class="option-card" data-action="stress-test">
+                            <h3>Stress-test this</h3>
+                            <p>Challenge your thinking with scenarios</p>
+                        </button>
+                        <button class="option-card" data-action="sleep">
+                            <h3>Sleep on it</h3>
+                            <p>Email me this conversation to revisit</p>
+                        </button>
+                        <button class="option-card" data-action="share">
+                            <h3>Share with someone</h3>
+                            <p>Get their perspective on what I found</p>
+                        </button>
+                    </div>
+
+                    <button class="text-btn" id="finish">
+                        I'm ready to decide
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading state -->
+        <div class="thinking-overlay" id="thinking-overlay">
+            <div class="thinking-content">
+                <div class="thinking-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <p class="thinking-text">Thinking with you...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="app-v2.js"></script>
+</body>
+</html>
