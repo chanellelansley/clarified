@@ -710,7 +710,13 @@ const handleDecisionCardClick = async (card) => {
         }
 
         // Production: check subscription from database
-        const currentUser = window.supabaseClient?.getCurrentUser();
+        // Get fresh session to avoid race conditions after signup
+        let currentUser = window.supabaseClient?.getCurrentUser();
+        if (!currentUser) {
+            // Try getting session directly from Supabase as fallback
+            const { data: { session } } = await window.supabaseClient.getSupabase().auth.getSession();
+            currentUser = session?.user;
+        }
         if (!currentUser) {
             alert('Please sign in to access Life decisions.');
             return;
@@ -7759,6 +7765,7 @@ async function signInWithGoogle() {
 async function onSignUpComplete(user) {
     console.log('[AUTH] Completing sign-up for user:', user.id);
     currentUser = user;
+    isGuestMode = false; // Critical: mark as authenticated user
 
     try {
         // Extract first name if Google provided it
