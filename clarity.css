@@ -13048,8 +13048,8 @@ p, li {
 
 .auth-forgot {
     text-align: right;
-    margin-top: -8px;
-    margin-bottom: 16px;
+    margin-top: 12px;
+    margin-bottom: 24px;
 }
 
 .auth-forgot a {

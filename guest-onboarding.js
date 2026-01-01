@@ -187,13 +187,26 @@ async function signInWithEmail(event) {
 
 // Sign in with Google
 async function signInWithGoogle() {
+    // Wait for Supabase to initialize if needed
+    let attempts = 0;
+    while ((!window.supabaseClient || !window.supabaseClient.getSupabase()) && attempts < 10) {
+        await new Promise(resolve => setTimeout(resolve, 200));
+        attempts++;
+    }
+
+    if (!window.supabaseClient || !window.supabaseClient.getSupabase()) {
+        console.error('[AUTH] Supabase client not initialized after waiting');
+        alert('Unable to connect. Please refresh the page and try again.');
+        return;
+    }
+
     try {
         console.log('[AUTH] Signing in with Google');
 
-        const { data, error } = await window.supabaseClient.supabase.auth.signInWithOAuth({
+        const { data, error } = await window.supabaseClient.getSupabase().auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: window.location.origin
+                redirectTo: window.location.origin + '/#decisions'
             }
         });
 

@@ -524,9 +524,9 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', message: 'Server is running' });
 });
 
-// Default route - serve clarity.html
+// Default route - serve index.html
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/clarity.html');
+    res.sendFile(__dirname + '/index.html');
 });
 
 // Serve static files (CSS, JS, etc.) - but not HTML files by default
