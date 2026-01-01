@@ -244,9 +244,24 @@ const SUPABASE_CONFIG = {
 // Endpoint to handle chat messages
 app.post('/api/chat', async (req, res) => {
     try {
-        const { messages, system } = req.body;
+        const { messages, system, prompt_version } = req.body;
 
-        console.log('📨 Received request with', messages?.length || 0, 'messages');
+        console.log('📨 [API/chat] Request received');
+        console.log('📨 [API/chat] Prompt version:', prompt_version || 'not specified');
+        console.log('📨 [API/chat] Messages count:', messages?.length || 0);
+        console.log('📨 [API/chat] System prompt length:', system?.length || 0);
+        console.log('📨 [API/chat] First message content length:', messages?.[0]?.content?.length || 0);
+
+        // Log actual content for debugging (first 200 chars)
+        if (messages?.[0]?.content) {
+            console.log('📨 [API/chat] User message preview:', messages[0].content.substring(0, 200));
+        }
+
+        // Check for empty/missing data
+        if (!messages || messages.length === 0 || !messages[0]?.content) {
+            console.error('❌ [API/chat] Empty or missing messages');
+            return res.status(400).json({ error: 'No messages provided' });
+        }
 
         // Call Claude API
         const response = await fetch(CLAUDE_API_URL, {
@@ -266,18 +281,18 @@ app.post('/api/chat', async (req, res) => {
 
         if (!response.ok) {
             const errorData = await response.json();
-            console.error('Claude API error:', errorData);
+            console.error('❌ [API/chat] Claude API error:', errorData);
             return res.status(response.status).json({
                 error: errorData.error?.message || 'API request failed'
             });
         }
 
         const data = await response.json();
-        console.log('✅ Successfully received response from Claude');
+        console.log('✅ [API/chat] Claude response received, content length:', data.content?.[0]?.text?.length || 0);
 
         res.json(data);
     } catch (error) {
-        console.error('Server error:', error);
+        console.error('❌ [API/chat] Server error:', error);
         res.status(500).json({
             error: 'Internal server error: ' + error.message
         });

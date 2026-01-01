@@ -776,26 +776,38 @@ function startDeepClarity() {
 // ============================================
 
 async function callClaude(prompt, systemPrompt) {
+    const PROMPT_VERSION = 'v2.0-20250101';
+    console.log(`[AI-${PROMPT_VERSION}] Starting API call`);
+    console.log(`[AI-${PROMPT_VERSION}] System prompt length: ${systemPrompt?.length || 0}`);
+    console.log(`[AI-${PROMPT_VERSION}] User prompt length: ${prompt?.length || 0}`);
+
     try {
-        const response = await fetch('http://localhost:3000/api/chat', {
+        // Use relative URL so it works in both dev and production
+        const response = await fetch('/api/chat', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 system: systemPrompt,
-                messages: [{ role: 'user', content: prompt }]
+                messages: [{ role: 'user', content: prompt }],
+                prompt_version: PROMPT_VERSION
             })
         });
 
+        console.log(`[AI-${PROMPT_VERSION}] Response status: ${response.status}`);
+
         if (!response.ok) {
-            throw new Error(`Server error: ${response.status}`);
+            const errorText = await response.text();
+            console.error(`[AI-${PROMPT_VERSION}] Server error response:`, errorText);
+            throw new Error(`Server error: ${response.status} - ${errorText}`);
         }
 
         const data = await response.json();
+        console.log(`[AI-${PROMPT_VERSION}] Response received, content length: ${data.content?.[0]?.text?.length || 0}`);
         return data.content[0].text;
     } catch (error) {
-        console.error('Error calling Claude:', error);
+        console.error(`[AI-${PROMPT_VERSION}] Error calling Claude:`, error);
         throw error;
     }
 }
@@ -1049,6 +1061,16 @@ Want to feel: ${quickDecisionState.emotion}
 ${quickDecisionState.context ? `Additional context: ${quickDecisionState.context}` : ''}
 
 Analyze this decision and give a SPECIFIC recommendation from the options in the question. Speak directly to the person using "you" and "your".`;
+
+        // Debug logging for production issues
+        console.log('[Quick Guidance] Building prompt with state:', {
+            decision: quickDecisionState.decision,
+            matters: quickDecisionState.matters,
+            emotion: quickDecisionState.emotion,
+            context: quickDecisionState.context,
+            hasDecision: !!quickDecisionState.decision,
+            hasMatters: !!quickDecisionState.matters
+        });
 
         const response = await callClaude(userPrompt, systemPrompt);
 
