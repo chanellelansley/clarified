@@ -17,14 +17,18 @@ async function initSupabase() {
         }
         console.log('[INIT] ✅ Supabase library loaded');
 
-        // Step 2: Fetch config
-        console.log('[INIT] Fetching config from /api/config...');
-        const response = await fetch('/api/config');
-        const config = await response.json();
-        console.log('[INIT] ✅ Config fetched:', config.supabase.url ? 'URL present' : 'URL missing');
+        // Step 2: Get config from window.APP_CONFIG (loaded from config.js)
+        console.log('[INIT] Reading config from APP_CONFIG...');
+        const config = window.APP_CONFIG;
+
+        if (!config) {
+            console.error('[INIT] window.APP_CONFIG is not defined - config.js not loaded');
+            return false;
+        }
+        console.log('[INIT] ✅ Config loaded:', config.SUPABASE_URL ? 'URL present' : 'URL missing');
 
         // Step 3: Validate config
-        if (!config.supabase.url || !config.supabase.anonKey) {
+        if (!config.SUPABASE_URL || !config.SUPABASE_ANON_KEY) {
             console.warn('[INIT] Supabase not configured. Using localStorage fallback.');
             return false;
         }
@@ -33,8 +37,8 @@ async function initSupabase() {
         // Step 4: Create client
         console.log('[INIT] Creating Supabase client...');
         supabaseClient = window.supabase.createClient(
-            config.supabase.url,
-            config.supabase.anonKey,
+            config.SUPABASE_URL,
+            config.SUPABASE_ANON_KEY,
             {
                 auth: {
                     persistSession: true,

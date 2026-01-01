@@ -4,14 +4,13 @@
 
 let stripePublishableKey = null;
 
-// Load Stripe publishable key on page load
-async function loadStripeConfig() {
-    try {
-        const response = await fetch('/api/config');
-        const config = await response.json();
-        stripePublishableKey = config.stripe?.publishableKey;
-    } catch (error) {
-        console.error('Error loading Stripe config:', error);
+// Load Stripe publishable key from APP_CONFIG
+function loadStripeConfig() {
+    if (window.APP_CONFIG) {
+        stripePublishableKey = window.APP_CONFIG.STRIPE_PUBLISHABLE_KEY;
+        console.log('Stripe config loaded from APP_CONFIG');
+    } else {
+        console.error('APP_CONFIG not found - config.js not loaded');
     }
 }
 
@@ -46,11 +45,11 @@ function closeUpgradeModal() {
 async function upgradeToPro() {
     try {
         if (!stripePublishableKey) {
-            await loadStripeConfig();
+            loadStripeConfig();
         }
 
-        // Get Pro price ID from environment
-        const priceId = await getStripePriceId('pro');
+        // Get Pro price ID from APP_CONFIG
+        const priceId = getStripePriceId('pro');
         if (!priceId) {
             alert('Pro plan not configured. Please contact support.');
             return;
@@ -71,11 +70,11 @@ async function upgradeToPro() {
 async function buyLifeDecision() {
     try {
         if (!stripePublishableKey) {
-            await loadStripeConfig();
+            loadStripeConfig();
         }
 
-        // Get Life decision price ID from environment
-        const priceId = await getStripePriceId('life');
+        // Get Life decision price ID from APP_CONFIG
+        const priceId = getStripePriceId('life');
         if (!priceId) {
             alert('Life decision pricing not configured. Please contact support.');
             return;
@@ -92,21 +91,19 @@ async function buyLifeDecision() {
     }
 }
 
-// Get Stripe Price IDs from .env (via server)
-async function getStripePriceId(type) {
-    try {
-        const response = await fetch('/api/config');
-        const config = await response.json();
-
-        if (type === 'pro') {
-            return config.stripe?.proPriceId;
-        } else if (type === 'life') {
-            return config.stripe?.lifePriceId;
-        }
-    } catch (error) {
-        console.error('Error fetching price ID:', error);
+// Get Stripe Price IDs from APP_CONFIG
+function getStripePriceId(type) {
+    if (!window.APP_CONFIG) {
+        console.error('APP_CONFIG not found');
         return null;
     }
+
+    if (type === 'pro') {
+        return window.APP_CONFIG.STRIPE_PRO_PRICE_ID;
+    } else if (type === 'life') {
+        return window.APP_CONFIG.STRIPE_LIFE_PRICE_ID;
+    }
+    return null;
 }
 
 // Manage subscription (open Stripe Customer Portal)
