@@ -2342,6 +2342,36 @@
     </div>
 </div>
 
+<!-- Deeper Guidance Interest Modal -->
+<div class="modal" id="deeper-guidance-modal">
+    <div class="modal-content interest-modal-content">
+        <button class="modal-close" onclick="closeDeeperGuidanceModal(); return false;">×</button>
+
+        <h2>We're building something for this</h2>
+        <p class="interest-modal-text">Want personalized guidance with next steps? We're working on it.</p>
+
+        <div class="interest-form">
+            <input
+                type="email"
+                id="interest-email"
+                class="input"
+                placeholder="your@email.com"
+            />
+            <button class="btn btn-primary btn-full" onclick="submitDeeperGuidanceInterest()">
+                Notify me
+            </button>
+        </div>
+
+        <p class="interest-modal-note">No spam, just early access</p>
+
+        <!-- Success state (hidden by default) -->
+        <div class="interest-success" id="interest-success" style="display: none;">
+            <div class="success-icon">✓</div>
+            <p>You're on the list!</p>
+        </div>
+    </div>
+</div>
+
 <!-- ============================================
          SAFETY MODALS
          ============================================ -->

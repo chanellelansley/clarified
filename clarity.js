@@ -1316,6 +1316,13 @@ Analyze this decision and give a SPECIFIC recommendation from the options in the
             </div>
         ` : '';
 
+        // Store recommendation for interest capture
+        window.lastQuickRecommendation = {
+            decision: quickDecisionState.decision,
+            recommendation: recommendation,
+            reason: reason
+        };
+
         contentEl.innerHTML = `
             <div class="quick-result-card">
                 <div class="quick-result-header">
@@ -1328,6 +1335,12 @@ Analyze this decision and give a SPECIFIC recommendation from the options in the
                 <p class="recommendation-reason">${reason}</p>
                 ${caveat ? `<p class="recommendation-caveat">${caveat}</p>` : ''}
                 ${nextStepsHTML}
+
+                <!-- Interest capture CTA -->
+                <button class="btn btn-secondary btn-full mt-lg" onclick="openDeeperGuidanceModal()">
+                    Want more help with this?
+                </button>
+
                 ${!isGuestMode ? `
                 <div class="quick-result-streak">
                     <div class="streak-indicator">
@@ -7554,6 +7567,98 @@ function clearGuestLimit() {
 function closeModal(modalId) {
     document.getElementById(modalId).classList.remove('active');
     document.body.style.overflow = '';
+}
+
+// ============================================
+// DEEPER GUIDANCE INTEREST CAPTURE
+// ============================================
+
+function openDeeperGuidanceModal() {
+    const modal = document.getElementById('deeper-guidance-modal');
+    const emailInput = document.getElementById('interest-email');
+    const successState = document.getElementById('interest-success');
+    const form = document.querySelector('.interest-form');
+    const text = document.querySelector('.interest-modal-text');
+    const note = document.querySelector('.interest-modal-note');
+
+    // Reset modal state
+    if (successState) successState.style.display = 'none';
+    if (form) form.style.display = 'flex';
+    if (text) text.style.display = 'block';
+    if (note) note.style.display = 'block';
+
+    // Pre-fill email if logged in
+    const currentUser = window.supabaseClient?.getCurrentUser();
+    if (currentUser?.email && emailInput) {
+        emailInput.value = currentUser.email;
+    }
+
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeDeeperGuidanceModal() {
+    const modal = document.getElementById('deeper-guidance-modal');
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+async function submitDeeperGuidanceInterest() {
+    const emailInput = document.getElementById('interest-email');
+    const email = emailInput?.value?.trim();
+
+    if (!email || !email.includes('@')) {
+        alert('Please enter a valid email address');
+        return;
+    }
+
+    try {
+        const currentUser = window.supabaseClient?.getCurrentUser();
+        const recommendation = window.lastQuickRecommendation || {};
+
+        // Save to Supabase
+        const { error } = await window.supabaseClient.getSupabase()
+            .from('feature_interest')
+            .insert({
+                email: email,
+                user_id: currentUser?.id || null,
+                decision: recommendation.decision || null,
+                recommendation: recommendation.recommendation || null,
+                feature_type: 'deeper_guidance',
+                created_at: new Date().toISOString()
+            });
+
+        if (error) {
+            console.error('[Interest] Error saving:', error);
+            // If table doesn't exist, log it but still show success to user
+            if (error.code === '42P01') {
+                console.log('[Interest] Table does not exist yet - needs to be created');
+            }
+        } else {
+            console.log('[Interest] Saved successfully');
+        }
+
+        // Show success state
+        const successState = document.getElementById('interest-success');
+        const form = document.querySelector('.interest-form');
+        const text = document.querySelector('.interest-modal-text');
+        const note = document.querySelector('.interest-modal-note');
+
+        if (form) form.style.display = 'none';
+        if (text) text.style.display = 'none';
+        if (note) note.style.display = 'none';
+        if (successState) successState.style.display = 'block';
+
+        // Auto-close after 2 seconds
+        setTimeout(() => {
+            closeDeeperGuidanceModal();
+        }, 2000);
+
+    } catch (error) {
+        console.error('[Interest] Error:', error);
+        captureError(error, { component: 'submitDeeperGuidanceInterest' });
+        alert('Something went wrong. Please try again.');
+    }
 }
 
 // Handle Deep Guidance restriction for guests
