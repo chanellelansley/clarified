@@ -412,7 +412,7 @@ async function initApp() {
 }
 
 // Auth state change handler
-if (window.supabaseClient) {
+if (window.supabaseClient?.supabase?.auth) {
     window.supabaseClient.supabase.auth.onAuthStateChange(async (event, session) => {
         console.log('[AUTH] Auth state changed:', event);
 

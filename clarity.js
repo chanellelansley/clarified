@@ -761,7 +761,7 @@ const handleDecisionCardClick = async (card) => {
         // Production: check subscription from database
         // Get fresh session to avoid race conditions after signup
         let currentUser = window.supabaseClient?.getCurrentUser();
-        if (!currentUser) {
+        if (!currentUser && window.supabaseClient?.getSupabase()?.auth) {
             // Try getting session directly from Supabase as fallback
             const { data: { session } } = await window.supabaseClient.getSupabase().auth.getSession();
             currentUser = session?.user;
@@ -7290,6 +7290,10 @@ function showForgotPassword() {
     }
 
     // Send password reset email
+    if (!window.supabaseClient?.getSupabase()?.auth) {
+        alert('Authentication system not ready. Please refresh and try again.');
+        return;
+    }
     window.supabaseClient.getSupabase().auth.resetPasswordForEmail(email, {
         redirectTo: window.location.origin + '/reset-password.html'
     })
@@ -8085,7 +8089,7 @@ async function skipPostSignup() {
 async function initApp() {
     console.log('[APP] Initializing app');
 
-    if (!window.supabaseClient) {
+    if (!window.supabaseClient?.getSupabase()?.auth) {
         console.error('[APP] Supabase client not initialized');
         showPage('landing');
         isGuestMode = true;
@@ -8133,7 +8137,7 @@ async function initApp() {
 }
 
 // Auth state change handler
-if (window.supabaseClient) {
+if (window.supabaseClient?.getSupabase()?.auth) {
     window.supabaseClient.getSupabase().auth.onAuthStateChange(async (event, session) => {
         console.log('[AUTH] Auth state changed:', event);
 
