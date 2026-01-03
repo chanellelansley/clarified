@@ -1302,9 +1302,52 @@ Analyze this decision and give a SPECIFIC recommendation from the options in the
             reason = `Based on what you said matters: ${quickDecisionState.matters}.`;
         }
 
-        // Get decision count and streak
-        const decisionCount = getStoredDecisions().length + 1;
-        const streakDays = 2; // TODO: Calculate actual streak
+        // Get decision count and calculate streak for logged-in users
+        let decisions = [];
+        let streakDays = 0;
+
+        if (!isGuestMode && window.supabaseClient?.getCurrentUser()) {
+            // Load from database for logged-in users
+            if (window.supabaseClient.loadDecisionsFromDatabase) {
+                decisions = await window.supabaseClient.loadDecisionsFromDatabase();
+            }
+        } else {
+            decisions = getStoredDecisions();
+        }
+
+        const decisionCount = decisions.length + 1;
+
+        // Calculate streak including this new decision
+        if (!isGuestMode) {
+            const existingStreak = calculateStreak(decisions);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            let hasDecisionToday = false;
+            if (decisions.length > 0) {
+                const mostRecent = new Date(decisions[0].created_at || decisions[0].savedAt || decisions[0].timestamp);
+                mostRecent.setHours(0, 0, 0, 0);
+                hasDecisionToday = mostRecent.getTime() === today.getTime();
+            }
+
+            if (hasDecisionToday) {
+                // Already had a decision today - streak stays the same
+                streakDays = existingStreak;
+            } else if (existingStreak > 0) {
+                // Had a streak from yesterday - this decision adds to it
+                streakDays = existingStreak + 1;
+            } else {
+                // No previous decisions or streak broken - this starts a new streak
+                streakDays = 1;
+            }
+        }
+
+        // Build streak HTML (only for logged-in users with streak > 0)
+        const streakHTML = (!isGuestMode && streakDays > 0) ? `
+            <div class="result-streak-badge">
+                🔥 ${streakDays} day${streakDays === 1 ? '' : 's'} streak
+            </div>
+        ` : '';
 
         // Build next steps HTML if available
         const nextStepsHTML = nextSteps.length > 0 ? `
@@ -1327,6 +1370,7 @@ Analyze this decision and give a SPECIFIC recommendation from the options in the
             <div class="quick-result-card">
                 <div class="quick-result-header">
                     <div class="decision-number">Decision #${decisionCount}</div>
+                    ${streakHTML}
                 </div>
                 <div class="quick-result-recommendation">
                     <div class="recommendation-icon celebrate">✓</div>
@@ -1340,15 +1384,6 @@ Analyze this decision and give a SPECIFIC recommendation from the options in the
                 <button class="btn btn-secondary btn-full mt-lg" onclick="openDeeperGuidanceModal()">
                     Want more help with this?
                 </button>
-
-                ${!isGuestMode ? `
-                <div class="quick-result-streak">
-                    <div class="streak-indicator">
-                        <span class="streak-flame-small">🔥</span>
-                        <span class="streak-count">${streakDays} day streak</span>
-                    </div>
-                </div>
-                ` : ''}
             </div>
         `;
 

@@ -2314,6 +2314,11 @@ p, li {
 
 .quick-result-header {
     margin-bottom: var(--spacing-md);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
 }
 
 .decision-number {
@@ -2322,6 +2327,18 @@ p, li {
     letter-spacing: 0.5px;
     color: var(--gray-500);
     font-weight: 600;
+}
+
+.result-streak-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #FEF3C7;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #92400E;
 }
 
 .quick-result-recommendation {
