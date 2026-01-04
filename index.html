@@ -1189,16 +1189,15 @@
                     <button class="chip" data-emotion="comfortable">Comfortable</button>
                     <button class="chip" data-emotion="healthy">Healthy</button>
                     <button class="chip" data-emotion="relieved">Relieved</button>
-                    <button class="chip" data-emotion="other">Other</button>
                 </div>
 
-                <!-- Custom emotion input (shown when "Other" is selected) -->
-                <div class="card mt-md" id="quick-custom-emotion-container" style="display: none;">
+                <!-- Custom emotion input (always visible) -->
+                <div class="card mt-md" id="quick-custom-emotion-container">
                     <input
                         type="text"
                         id="quick-custom-emotion-input"
                         class="input"
-                        placeholder="Describe how you want to feel...">
+                        placeholder="Or type your own...">
                 </div>
 
                 <button class="btn btn-primary btn-full mt-xl" id="quick-continue-3">Get recommendation</button>

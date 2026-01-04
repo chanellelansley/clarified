@@ -1161,35 +1161,31 @@ document.querySelectorAll('#quick-emotion-cards .chip').forEach(chip => {
     chip.addEventListener('click', function() {
         document.querySelectorAll('#quick-emotion-cards .chip').forEach(c => c.classList.remove('selected'));
         this.classList.add('selected');
-
-        // Show/hide custom emotion input based on "Other" selection
-        const customContainer = document.getElementById('quick-custom-emotion-container');
+        // Clear custom input when a chip is selected
         const customInput = document.getElementById('quick-custom-emotion-input');
-        if (this.dataset.emotion === 'other') {
-            customContainer.style.display = 'block';
-            customInput.focus();
-        } else {
-            customContainer.style.display = 'none';
-            customInput.value = '';
-        }
+        if (customInput) customInput.value = '';
     });
+});
+
+// When user types in custom emotion, deselect any chips
+document.getElementById('quick-custom-emotion-input')?.addEventListener('input', function() {
+    if (this.value.trim()) {
+        document.querySelectorAll('#quick-emotion-cards .chip').forEach(c => c.classList.remove('selected'));
+    }
 });
 
 document.getElementById('quick-continue-3')?.addEventListener('click', async () => {
     const selectedEmotion = document.querySelector('#quick-emotion-cards .chip.selected');
+    const customEmotion = document.getElementById('quick-custom-emotion-input')?.value.trim();
 
-    if (!selectedEmotion) {
-        alert('Please select how you want to feel.');
+    // Must have either a chip selected OR custom text entered
+    if (!selectedEmotion && !customEmotion) {
+        alert('Please select or type how you want to feel.');
         return;
     }
 
-    // Handle custom emotion if "Other" was selected
-    if (selectedEmotion.dataset.emotion === 'other') {
-        const customEmotion = document.getElementById('quick-custom-emotion-input').value.trim();
-        if (!customEmotion) {
-            alert('Please describe how you want to feel.');
-            return;
-        }
+    // Use custom emotion if entered, otherwise use selected chip
+    if (customEmotion) {
         quickDecisionState.emotion = customEmotion;
     } else {
         quickDecisionState.emotion = selectedEmotion.dataset.emotion;
