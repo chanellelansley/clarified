@@ -1842,11 +1842,13 @@ Return ONLY the category name in lowercase, nothing else.`;
 
     } catch (error) {
         console.error('Error detecting category:', error);
-        categoryDisplay.textContent = 'Other';
+        if (categoryDisplay) {
+            categoryDisplay.textContent = 'Other';
+        }
         deepDecisionState.category = 'other';
 
         // If we're already on the values page, update it with fallback category
-        if (document.getElementById('deep-4').classList.contains('active')) {
+        if (document.getElementById('deep-4')?.classList.contains('active')) {
             populateCategoryValues();
         }
     }
