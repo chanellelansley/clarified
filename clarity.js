@@ -7222,11 +7222,23 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Check for password recovery flow in URL hash
     const hash = window.location.hash;
-    if (hash && (hash.includes('type=recovery') || hash.includes('type=signup'))) {
+    if (hash && (hash.includes('type=recovery') || hash.includes('access_token'))) {
         console.log('🔐 Password recovery detected, redirecting to reset page...');
         // Redirect to reset password page with the hash
         window.location.href = '/reset-password.html' + hash;
         return;
+    }
+
+    // Handle expired/error recovery links
+    if (hash && hash.includes('error=')) {
+        console.log('🔐 Auth error in URL, showing message...');
+        const errorMatch = hash.match(/error_description=([^&]+)/);
+        if (errorMatch) {
+            const errorMsg = decodeURIComponent(errorMatch[1].replace(/\+/g, ' '));
+            alert('Password reset failed: ' + errorMsg + '\n\nPlease request a new reset link.');
+        }
+        // Clear the hash
+        window.location.hash = '';
     }
 
     // Initialize Supabase first
