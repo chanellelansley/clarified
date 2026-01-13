@@ -326,7 +326,7 @@
         const SUPABASE_URL = 'https://qrmyceodqflqilsuxwjo.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFybXljZW9kcWZscWlsc3V4d2pvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY3MTcyNTEsImV4cCI6MjA1MjI5MzI1MX0.11SbLRBOzgFGvd52LrGE5LKdDxKcKbhJjCdPfuDHQkY';
 
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // Admin emails that can access dashboard
         const ADMIN_EMAILS = ['chanellelansley@gmail.com']; // Add your email here
@@ -334,7 +334,7 @@
         // Check if user is logged in on page load
         async function checkAuth() {
             try {
-                const { data: { session } } = await supabase.auth.getSession();
+                const { data: { session } } = await supabaseClientClient.auth.getSession();
 
                 if (session && ADMIN_EMAILS.includes(session.user.email)) {
                     document.getElementById('login-section').style.display = 'none';
@@ -362,7 +362,7 @@
             }
 
             try {
-                const { data, error } = await supabase.auth.signInWithPassword({
+                const { data, error } = await supabaseClientClient.auth.signInWithPassword({
                     email,
                     password
                 });
@@ -395,7 +395,7 @@
         async function loadUserStats() {
             try {
                 // Get total users from user_profiles (since we can't query auth.users directly)
-                const { count: totalUsers } = await supabase
+                const { count: totalUsers } = await supabaseClient
                     .from('user_profiles')
                     .select('*', { count: 'exact', head: true });
 
@@ -405,7 +405,7 @@
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
 
-                const { count: todayUsers } = await supabase
+                const { count: todayUsers } = await supabaseClient
                     .from('user_profiles')
                     .select('*', { count: 'exact', head: true })
                     .gte('created_at', today.toISOString());
@@ -421,7 +421,7 @@
         async function loadDecisionStats() {
             try {
                 // Total decisions
-                const { count: totalDecisions } = await supabase
+                const { count: totalDecisions } = await supabaseClient
                     .from('decisions')
                     .select('*', { count: 'exact', head: true });
 
@@ -431,7 +431,7 @@
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
 
-                const { count: todayDecisions } = await supabase
+                const { count: todayDecisions } = await supabaseClient
                     .from('decisions')
                     .select('*', { count: 'exact', head: true })
                     .gte('created_at', today.toISOString());
@@ -440,7 +440,7 @@
                     `+${todayDecisions || 0} today`;
 
                 // Quick decisions
-                const { count: quickCount } = await supabase
+                const { count: quickCount } = await supabaseClient
                     .from('decisions')
                     .select('*', { count: 'exact', head: true })
                     .eq('decision_type', 'quick');
@@ -448,7 +448,7 @@
                 document.getElementById('quick-decisions').textContent = quickCount || 0;
 
                 // Deep decisions
-                const { count: deepCount } = await supabase
+                const { count: deepCount } = await supabaseClient
                     .from('decisions')
                     .select('*', { count: 'exact', head: true })
                     .eq('decision_type', 'deep');
@@ -462,7 +462,7 @@
         // Load recent users
         async function loadRecentUsers() {
             try {
-                const { data: users, error } = await supabase
+                const { data: users, error } = await supabaseClient
                     .from('user_profiles')
                     .select('user_id, created_at')
                     .order('created_at', { ascending: false })
@@ -493,7 +493,7 @@
         // Load recent decisions
         async function loadRecentDecisions() {
             try {
-                const { data: decisions, error } = await supabase
+                const { data: decisions, error } = await supabaseClient
                     .from('decisions')
                     .select('question, decision_type, created_at')
                     .order('created_at', { ascending: false })
@@ -525,7 +525,7 @@
         // Load signups by day
         async function loadSignupsByDay() {
             try {
-                const { data: profiles, error } = await supabase
+                const { data: profiles, error } = await supabaseClient
                     .from('user_profiles')
                     .select('created_at')
                     .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
