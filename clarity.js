@@ -7220,6 +7220,15 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('🔄 Initializing Clarity app...');
 
+    // Check for password recovery flow in URL hash
+    const hash = window.location.hash;
+    if (hash && (hash.includes('type=recovery') || hash.includes('type=signup'))) {
+        console.log('🔐 Password recovery detected, redirecting to reset page...');
+        // Redirect to reset password page with the hash
+        window.location.href = '/reset-password.html' + hash;
+        return;
+    }
+
     // Initialize Supabase first
     if (window.supabaseClient) {
         console.log('🔄 Initializing Supabase...');
