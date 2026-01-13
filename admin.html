@@ -217,7 +217,7 @@
 </head>
 <body>
     <!-- Login Form (shown if not authenticated) -->
-    <div id="login-section" class="login-form" style="display: none;">
+    <div id="login-section" class="login-form">
         <h1>Admin Login</h1>
         <div class="form-group">
             <label>Email</label>
@@ -333,15 +333,20 @@
 
         // Check if user is logged in on page load
         async function checkAuth() {
-            const { data: { session } } = await supabase.auth.getSession();
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
 
-            if (session && ADMIN_EMAILS.includes(session.user.email)) {
-                document.getElementById('login-section').style.display = 'none';
-                document.getElementById('dashboard-section').style.display = 'block';
-                loadStats();
-            } else {
+                if (session && ADMIN_EMAILS.includes(session.user.email)) {
+                    document.getElementById('login-section').style.display = 'none';
+                    document.getElementById('dashboard-section').style.display = 'block';
+                    loadStats();
+                } else {
+                    document.getElementById('login-section').style.display = 'block';
+                    document.getElementById('dashboard-section').style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
                 document.getElementById('login-section').style.display = 'block';
-                document.getElementById('dashboard-section').style.display = 'none';
             }
         }
 
