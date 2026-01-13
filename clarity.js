@@ -7805,7 +7805,15 @@ async function signUpWithEmail(event) {
     } catch (error) {
         console.error('[AUTH] Sign-up error:', error);
         captureError(error, { component: 'signUpWithEmail', email: email });
-        alert(`Sign-up failed: ${error.message}`);
+
+        // Show user-friendly error messages
+        if (error.name === 'AuthRetryableFetchError' || error.message === 'Failed to fetch') {
+            alert('Connection failed. Please check your internet and try again.');
+        } else if (error.message?.includes('already registered')) {
+            alert('This email is already registered. Please sign in instead.');
+        } else {
+            alert(`Sign-up failed: ${error.message}`);
+        }
     }
 }
 
