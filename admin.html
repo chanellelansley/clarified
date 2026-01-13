@@ -334,7 +334,7 @@
         // Check if user is logged in on page load
         async function checkAuth() {
             try {
-                const { data: { session } } = await supabaseClientClient.auth.getSession();
+                const { data: { session } } = await supabaseClient.auth.getSession();
 
                 if (session && ADMIN_EMAILS.includes(session.user.email)) {
                     document.getElementById('login-section').style.display = 'none';
@@ -362,7 +362,7 @@
             }
 
             try {
-                const { data, error } = await supabaseClientClient.auth.signInWithPassword({
+                const { data, error } = await supabaseClient.auth.signInWithPassword({
                     email,
                     password
                 });
