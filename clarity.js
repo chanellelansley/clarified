@@ -850,6 +850,53 @@ function startDeepClarity() {
     showPage('deep-1');
 }
 
+// Start Life decision from interstitial (handles gating)
+async function startLifeDecision() {
+    console.log('[LIFE] Starting Life decision from interstitial');
+
+    // Check paywall (bypass in dev mode)
+    if (shouldBypassPaywall()) {
+        startDeepClarity();
+        return;
+    }
+
+    // Check localStorage for free Life decision usage
+    const freeLifeDecisionUsed = localStorage.getItem('free_life_decision_used') === 'true';
+
+    // Check if user is signed in
+    let currentUser = window.supabaseClient?.getCurrentUser();
+    if (!currentUser && window.supabaseClient?.getSupabase()?.auth) {
+        const { data: { session } } = await window.supabaseClient.getSupabase().auth.getSession();
+        currentUser = session?.user;
+    }
+
+    if (currentUser) {
+        // Signed-in user: check subscription
+        const subscriptionData = await window.supabaseClient.getUserSubscription();
+        const isPro = subscriptionData?.subscription?.plan === 'pro' && subscriptionData?.subscription?.status === 'active';
+        const isBeta = subscriptionData?.subscription?.is_beta_user;
+
+        console.log('[LIFE] Signed-in user check:', { isPro, isBeta, freeLifeDecisionUsed });
+
+        if (isBeta || isPro) {
+            startDeepClarity();
+        } else if (!freeLifeDecisionUsed) {
+            startDeepClarity();
+        } else {
+            showLifeDecisionPaywall();
+        }
+    } else {
+        // Anonymous user
+        console.log('[LIFE] Anonymous user check:', { freeLifeDecisionUsed });
+
+        if (!freeLifeDecisionUsed) {
+            startDeepClarity();
+        } else {
+            showLifeDecisionPaywall();
+        }
+    }
+}
+
 // ============================================
 // CLAUDE API HELPER
 // ============================================
