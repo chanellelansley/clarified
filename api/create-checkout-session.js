@@ -1,7 +1,13 @@
 // Vercel Serverless Function for Stripe checkout
 const Stripe = require('stripe');
 
-const stripe = process.env.STRIPE_SECRET_KEY ? Stripe(process.env.STRIPE_SECRET_KEY) : null;
+const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
+
+// Price IDs - set these in your Stripe Dashboard
+const PRICES = {
+    pro_monthly: process.env.STRIPE_PRICE_PRO_MONTHLY || 'price_pro_monthly',
+    pro_annual: process.env.STRIPE_PRICE_PRO_ANNUAL || 'price_pro_annual'
+};
 
 module.exports = async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -21,19 +27,40 @@ module.exports = async (req, res) => {
             return res.status(500).json({ error: 'Stripe not configured' });
         }
 
-        const { priceId, userId, mode, successUrl, cancelUrl } = req.body;
+        const { userId, email, plan = 'pro_monthly' } = req.body;
 
-        console.log('[Checkout] Creating session for user:', userId, 'price:', priceId, 'mode:', mode);
+        if (!userId) {
+            return res.status(400).json({ error: 'userId is required' });
+        }
 
-        const session = await stripe.checkout.sessions.create({
-            mode: mode || 'subscription',
+        // Get the price ID based on plan selection
+        const priceId = PRICES[plan] || PRICES.pro_monthly;
+
+        console.log('[Checkout] Creating session:', { userId, plan, priceId });
+
+        const sessionConfig = {
+            mode: 'subscription',
             payment_method_types: ['card'],
-            line_items: [{ price: priceId, quantity: 1 }],
-            success_url: successUrl || `${req.headers.origin || 'https://clarified.app'}/?upgrade_success=true`,
-            cancel_url: cancelUrl || `${req.headers.origin || 'https://clarified.app'}/?upgrade_canceled=true`,
-            client_reference_id: userId,
-            metadata: { userId }
-        });
+            line_items: [{
+                price: priceId,
+                quantity: 1
+            }],
+            success_url: `${req.headers.origin || 'https://clarified.app'}/?upgrade_success=true`,
+            cancel_url: `${req.headers.origin || 'https://clarified.app'}/?upgrade_canceled=true`,
+            // Pass user_id in metadata for webhook handler
+            metadata: {
+                user_id: userId
+            },
+            // Also set client_reference_id as backup
+            client_reference_id: userId
+        };
+
+        // Pre-fill email if provided
+        if (email) {
+            sessionConfig.customer_email = email;
+        }
+
+        const session = await stripe.checkout.sessions.create(sessionConfig);
 
         console.log('[Checkout] Session created:', session.id);
         return res.status(200).json({ url: session.url, sessionId: session.id });

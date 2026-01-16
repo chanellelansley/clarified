@@ -3,6 +3,36 @@
 // ============================================
 
 // ============================================
+// ANALYTICS TRACKING
+// ============================================
+
+// Track analytics events - can be hooked up to any analytics provider
+function trackEvent(eventName, properties = {}) {
+    console.log('[Analytics]', eventName, properties);
+
+    // Send to your analytics provider here
+    // Examples:
+    // if (window.gtag) gtag('event', eventName, properties);
+    // if (window.posthog) posthog.capture(eventName, properties);
+    // if (window.mixpanel) mixpanel.track(eventName, properties);
+
+    // For now, just store in localStorage for debugging/admin
+    try {
+        const events = JSON.parse(localStorage.getItem('analytics_events') || '[]');
+        events.push({
+            event: eventName,
+            properties,
+            timestamp: Date.now()
+        });
+        // Keep only last 100 events
+        if (events.length > 100) events.shift();
+        localStorage.setItem('analytics_events', JSON.stringify(events));
+    } catch (e) {
+        console.warn('[Analytics] Failed to store event:', e);
+    }
+}
+
+// ============================================
 // SENTRY ERROR TRACKING HELPERS
 // ============================================
 
@@ -727,7 +757,7 @@ const handleDecisionCardClick = async (card) => {
         const currentUser = window.supabaseClient?.getCurrentUser();
         if (currentUser) {
             const subscriptionData = await window.supabaseClient.getUserSubscription();
-            const isPro = subscriptionData?.subscription?.plan === 'pro';
+            const isPro = subscriptionData?.subscription?.plan === 'pro' && subscriptionData?.subscription?.status === 'active';
             const isBeta = subscriptionData?.subscription?.is_beta_user;
             const everydayUsed = subscriptionData?.usage?.everyday_decisions_used || 0;
 
@@ -745,57 +775,51 @@ const handleDecisionCardClick = async (card) => {
             startQuickClarity();
         }
     } else if (type === 'deep') {
-        // GUEST CHECK: Block guests from accessing Deep Guidance
-        if (isGuestMode) {
-            console.log('[GUEST] Guest attempted to access Deep Guidance (Life)');
-            showSignupPrompt('deep');
-            return;
-        }
-
         // Check paywall (bypass in dev mode)
         if (shouldBypassPaywall()) {
             startDeepClarity();
             return;
         }
 
-        // Production: check subscription from database
-        // Get fresh session to avoid race conditions after signup
+        // Check if user is signed in
         let currentUser = window.supabaseClient?.getCurrentUser();
         if (!currentUser && window.supabaseClient?.getSupabase()?.auth) {
-            // Try getting session directly from Supabase as fallback
             const { data: { session } } = await window.supabaseClient.getSupabase().auth.getSession();
             currentUser = session?.user;
         }
-        if (!currentUser) {
-            alert('Please sign in to access Life decisions.');
-            return;
-        }
 
-        const subscriptionData = await window.supabaseClient.getUserSubscription();
-        const isPro = subscriptionData?.subscription?.plan === 'pro';
-        const isBeta = subscriptionData?.subscription?.is_beta_user;
-        const lifeUsed = subscriptionData?.usage?.life_decisions_used || 0;
-        const trialUsed = subscriptionData?.usage?.trial_life_used || false;
+        // Check localStorage for free Life decision usage
+        const freeLifeDecisionUsed = localStorage.getItem('free_life_decision_used') === 'true';
 
-        console.log('[Paywall] Life decision check:', { isPro, isBeta, lifeUsed, trialUsed });
+        if (currentUser) {
+            // Signed-in user: check subscription
+            const subscriptionData = await window.supabaseClient.getUserSubscription();
+            const isPro = subscriptionData?.subscription?.plan === 'pro' && subscriptionData?.subscription?.status === 'active';
+            const isBeta = subscriptionData?.subscription?.is_beta_user;
 
-        if (isBeta) {
-            // Beta users have unlimited access
-            startDeepClarity();
-        } else if (isPro) {
-            // Pro users get 2 Life decisions per month
-            if (lifeUsed >= 2) {
-                alert('You\'ve used your 2 included Life decisions this month. Additional sessions are $3 each.');
-                return;
+            console.log('[Paywall] Life decision check (signed in):', { isPro, isBeta, freeLifeDecisionUsed });
+
+            if (isBeta || isPro) {
+                // Pro/Beta users have unlimited Life decisions
+                startDeepClarity();
+            } else if (!freeLifeDecisionUsed) {
+                // Free signed-in users get 1 free Life decision
+                startDeepClarity();
+            } else {
+                // Free user has used their 1 free decision - show paywall
+                showLifeDecisionPaywall();
             }
-            startDeepClarity();
         } else {
-            // Free users get 1 trial Life decision
-            if (trialUsed) {
-                alert('You\'ve used your free Life decision trial. Upgrade to Pro for 2 Life decisions per month, or buy one for $5.');
-                return;
+            // Anonymous user: check localStorage
+            console.log('[Paywall] Life decision check (anonymous):', { freeLifeDecisionUsed });
+
+            if (!freeLifeDecisionUsed) {
+                // Allow 1 free Life decision without signup
+                startDeepClarity();
+            } else {
+                // Anonymous user has used their free decision - show paywall
+                showLifeDecisionPaywall();
             }
-            startDeepClarity();
         }
     } else {
         // Pro card
@@ -2866,10 +2890,10 @@ function populateCategoryChallenges() {
     });
     container.appendChild(customChip);
 
-    // Add "I just want clarity" option
+    // Add "I keep second-guessing myself" option
     const clarityChip = document.createElement('button');
     clarityChip.className = 'chip challenge-chip';
-    clarityChip.dataset.difficulty = 'none';
+    clarityChip.dataset.difficulty = 'second-guessing';
     clarityChip.innerHTML = `
         <span class="challenge-icon">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -2878,7 +2902,7 @@ function populateCategoryChallenges() {
                 <path d="M12 16h.01"></path>
             </svg>
         </span>
-        <span>I just want clarity</span>
+        <span>I keep second-guessing myself</span>
     `;
     clarityChip.addEventListener('click', function() {
         this.classList.toggle('selected');
@@ -3071,6 +3095,15 @@ async function generateDeepResults() {
     console.log('[DEEP] About to save decision...');
     await saveCompletedDecision();
     console.log('[DEEP] Save completed');
+
+    // Mark free Life decision as used (at completion, not start)
+    localStorage.setItem('free_life_decision_used', 'true');
+    console.log('[GATING] Free Life decision marked as used');
+
+    // Track analytics event
+    if (typeof trackEvent === 'function') {
+        trackEvent('life_decision_completed_free');
+    }
 }
 
 async function saveCompletedDecision() {
@@ -5000,6 +5033,87 @@ function closeShareModal() {
     }
 }
 
+// ============================================
+// UPGRADE/PAYWALL MODAL
+// ============================================
+
+function showLifeDecisionPaywall() {
+    console.log('[PAYWALL] Showing Life decision paywall');
+
+    // Track analytics event
+    if (typeof trackEvent === 'function') {
+        trackEvent('paywall_shown_second_life_decision');
+    }
+
+    openUpgradeModal();
+}
+
+function openUpgradeModal() {
+    const modal = document.getElementById('upgrade-modal');
+    if (modal) {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeUpgradeModal() {
+    const modal = document.getElementById('upgrade-modal');
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+async function upgradeToPro() {
+    console.log('[UPGRADE] User clicked upgrade to Pro');
+
+    // Track analytics event
+    if (typeof trackEvent === 'function') {
+        trackEvent('upgrade_clicked_pro');
+    }
+
+    // Check if user is signed in
+    let currentUser = window.supabaseClient?.getCurrentUser();
+    if (!currentUser && window.supabaseClient?.getSupabase()?.auth) {
+        const { data: { session } } = await window.supabaseClient.getSupabase().auth.getSession();
+        currentUser = session?.user;
+    }
+
+    if (!currentUser) {
+        // User needs to sign up first
+        closeUpgradeModal();
+        showSignupPrompt('upgrade');
+        return;
+    }
+
+    // Redirect to Stripe checkout
+    try {
+        const response = await fetch('/api/create-checkout-session', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                userId: currentUser.id,
+                email: currentUser.email,
+                plan: 'pro_monthly' // Options: 'pro_monthly' or 'pro_annual'
+            })
+        });
+
+        if (response.ok) {
+            const { url } = await response.json();
+            window.location.href = url;
+        } else {
+            const errorData = await response.json();
+            console.error('[UPGRADE] Failed to create checkout session:', errorData);
+            alert('Unable to start checkout. Please try again.');
+        }
+    } catch (error) {
+        console.error('[UPGRADE] Error creating checkout session:', error);
+        alert('Unable to start checkout. Please try again.');
+    }
+}
+
 function generateShareLink() {
     // Generate a random share ID
     const shareId = Math.random().toString(36).substring(2, 15);
@@ -5954,7 +6068,7 @@ async function toggleDecisionCard(card, decision) {
     const currentUser = window.supabaseClient?.getCurrentUser();
     if (currentUser && window.supabaseClient) {
         const subscriptionData = await window.supabaseClient.getUserSubscription();
-        isPro = subscriptionData?.subscription?.plan === 'pro' || shouldBypassPaywall();
+        isPro = (subscriptionData?.subscription?.plan === 'pro' && subscriptionData?.subscription?.status === 'active') || shouldBypassPaywall();
     }
 
     // Get decision state
@@ -7547,8 +7661,8 @@ const SIGNUP_PROMPTS = {
             <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
             <polyline points="17 21 17 13 7 13 7 21"></polyline>
         </svg>`,
-        title: 'Save your decisions',
-        message: 'Create a free account to save your decisions, track outcomes, and discover patterns in how you think.'
+        title: "Don't lose this decision.",
+        message: 'Create a free account to save this decision and come back to it anytime.'
     },
     account: {
         icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -7573,6 +7687,13 @@ const SIGNUP_PROMPTS = {
         </svg>`,
         title: "You've used your 2 free decisions",
         message: 'Sign up to keep going — it\'s free, and you\'ll be able to save your decisions and track patterns over time.'
+    },
+    upgrade: {
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+        </svg>`,
+        title: 'Create an account to upgrade',
+        message: 'Sign up first, then you can upgrade to Pro for unlimited Life decisions.'
     }
 };
 

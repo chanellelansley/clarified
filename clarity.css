@@ -12291,6 +12291,61 @@ p, li {
     margin-bottom: 24px;
 }
 
+/* Nuanced Decision Line */
+.nuanced-decision-line {
+    text-align: center;
+    color: var(--sage-600);
+    font-size: 0.9375rem;
+    font-style: italic;
+    margin-bottom: 24px;
+    padding: 12px 16px;
+    background: var(--sage-50);
+    border-radius: 8px;
+}
+
+/* Reflection Prompt Card */
+.reflection-prompt-card {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+}
+
+.reflection-prompt-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--gray-900);
+    margin-bottom: 8px;
+}
+
+.reflection-prompt-subtitle {
+    font-size: 0.875rem;
+    color: var(--gray-500);
+    margin-bottom: 16px;
+}
+
+.reflection-prompt-textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    font-family: inherit;
+    resize: none;
+    background: white;
+}
+
+.reflection-prompt-textarea:focus {
+    outline: none;
+    border-color: var(--sage-500);
+}
+
+.reflection-prompt-textarea::placeholder {
+    color: var(--gray-400);
+    font-style: italic;
+}
+
 /* ============================================
    SAFETY MODALS - Crisis, Warning, Disclaimer
    ============================================ */
