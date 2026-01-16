@@ -4121,7 +4121,7 @@ function formatOptionForSentence(optionName) {
     let formatted = optionName.toLowerCase();
 
     // If it starts with a verb, convert to gerund (-ing form)
-    const verbStarters = ['ask', 'wait', 'take', 'go', 'buy', 'sell', 'move', 'stay', 'leave', 'accept', 'decline', 'start', 'stop', 'keep', 'change', 'choose', 'pick', 'get', 'make', 'do', 'try', 'quit', 'join', 'apply', 'propose'];
+    const verbStarters = ['ask', 'wait', 'take', 'go', 'buy', 'sell', 'move', 'stay', 'leave', 'accept', 'decline', 'start', 'stop', 'keep', 'change', 'choose', 'pick', 'get', 'make', 'do', 'try', 'quit', 'join', 'apply', 'propose', 'attend', 'skip', 'cancel', 'postpone', 'switch', 'break', 'end', 'begin', 'continue', 'pursue', 'ignore', 'follow', 'tell', 'call', 'meet', 'visit', 'send', 'bring', 'find', 'look', 'search', 'hire', 'fire', 'rent', 'invest', 'save', 'spend', 'pay', 'negotiate', 'confront', 'avoid', 'embrace', 'reject'];
 
     for (const verb of verbStarters) {
         if (formatted.startsWith(verb + ' ')) {
