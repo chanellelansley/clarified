@@ -8968,10 +8968,7 @@ async function openDNAStory() {
     // Check if user is logged in
     const currentUser = window.supabaseClient?.getCurrentUser();
     if (!currentUser) {
-        showToast('Sign in to see your Decision DNA');
-        setTimeout(() => {
-            showPage('login');
-        }, 1000);
+        showPage('login');
         return;
     }
 
@@ -8982,8 +8979,8 @@ async function openDNAStory() {
         .eq('user_id', currentUser.id);
 
     if (!decisions || decisions.length < DNA_UNLOCK_THRESHOLD) {
-        const remaining = DNA_UNLOCK_THRESHOLD - (decisions?.length || 0);
-        showToast(`Make ${remaining} more decision${remaining > 1 ? 's' : ''} to see your DNA`);
+        // Go to DNA profile page which will show the forming state
+        openDNAPage();
         return;
     }
 
@@ -8991,7 +8988,8 @@ async function openDNAStory() {
     window.dnaData = await loadDNAData();
 
     if (!window.dnaData) {
-        showToast('Still gathering insights. Make more decisions!');
+        // Go to DNA profile page which will show the forming state
+        openDNAPage();
         return;
     }
 
@@ -9221,24 +9219,76 @@ function handleDNAIconClick() {
 }
 
 async function openDNAPage() {
+    // Check if user is logged in
+    const currentUser = window.supabaseClient?.getCurrentUser();
+    if (!currentUser) {
+        showPage('login');
+        return;
+    }
+
+    // Get decision count
+    const { data: decisions } = await window.supabaseClient.getSupabase()
+        .from('decisions')
+        .select('id')
+        .eq('user_id', currentUser.id);
+
+    const decisionCount = decisions?.length || 0;
+
+    // Show the page first
+    showPage('dna-profile');
+
+    // Check if they have enough decisions
+    if (decisionCount < DNA_UNLOCK_THRESHOLD) {
+        // Show forming state
+        showDNAFormingState(decisionCount);
+        return;
+    }
+
     // Load data if not already loaded
     if (!window.dnaData) {
         window.dnaData = await loadDNAData();
     }
 
     if (!window.dnaData) {
-        showToast('Unable to load your profile');
+        // If data loading fails, show forming state as fallback
+        showDNAFormingState(decisionCount);
         return;
     }
 
-    // Populate the page
-    populateDNAPage(window.dnaData);
-
-    // Show the page
-    showPage('dna-profile');
+    // Show full profile
+    showDNAFullProfile(window.dnaData);
 
     // Clear badge
     document.getElementById('dna-badge')?.classList.remove('active');
+}
+
+function showDNAFormingState(decisionCount) {
+    const remaining = DNA_UNLOCK_THRESHOLD - decisionCount;
+
+    // Hide full profile, show forming state
+    document.getElementById('dna-profile-content').style.display = 'none';
+    document.getElementById('dna-profile-forming').style.display = 'block';
+
+    // Update progress
+    document.getElementById('forming-count').textContent = decisionCount;
+    document.getElementById('forming-remaining').textContent = remaining;
+    document.getElementById('forming-remaining-plural').textContent = remaining === 1 ? '' : 's';
+
+    const progressPercent = (decisionCount / DNA_UNLOCK_THRESHOLD) * 100;
+    document.getElementById('forming-progress-fill').style.width = `${progressPercent}%`;
+
+    console.log('[DNA] Showing forming state:', { decisionCount, remaining, progressPercent });
+}
+
+function showDNAFullProfile(data) {
+    // Hide forming state, show full profile
+    document.getElementById('dna-profile-forming').style.display = 'none';
+    document.getElementById('dna-profile-content').style.display = 'block';
+
+    // Populate the page
+    populateDNAPage(data);
+
+    console.log('[DNA] Showing full profile');
 }
 
 function populateDNAPage(data) {

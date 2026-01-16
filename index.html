@@ -690,7 +690,81 @@
 
         <!-- DNA PROFILE PAGE (Static) -->
         <div class="page" id="page-dna-profile">
-            <div class="dna-profile-content">
+            <!-- Empty State: Profile Forming -->
+            <div class="dna-profile-forming" id="dna-profile-forming" style="display: none;">
+                <a href="#" class="back-link" onclick="showPage('decisions'); return false;">← Back</a>
+
+                <div class="forming-card">
+                    <div class="forming-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M12 6v6l4 2"></path>
+                        </svg>
+                    </div>
+
+                    <h1 class="forming-title">Your Decision Profile is forming</h1>
+                    <p class="forming-subtext">
+                        Patterns only become meaningful after a few real decisions.<br>
+                        Make <span id="forming-remaining">5</span> more decision<span id="forming-remaining-plural">s</span> to see insights into how you decide.
+                    </p>
+
+                    <!-- Progress indicator -->
+                    <div class="forming-progress">
+                        <div class="forming-progress-bar">
+                            <div class="forming-progress-fill" id="forming-progress-fill" style="width: 0%"></div>
+                        </div>
+                        <p class="forming-progress-text"><span id="forming-count">0</span> of 5 decisions completed</p>
+                    </div>
+
+                    <!-- Preview section -->
+                    <div class="forming-preview">
+                        <h3 class="preview-heading">What you'll see</h3>
+                        <ul class="preview-list">
+                            <li>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                </svg>
+                                <span>Your top decision drivers</span>
+                            </li>
+                            <li>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                                </svg>
+                                <span>Patterns across tradeoffs you make</span>
+                            </li>
+                            <li>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                                <span>Where you tend to overthink vs move fast</span>
+                            </li>
+                            <li>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                </svg>
+                                <span>How your priorities shift by context</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- CTA -->
+                    <button class="btn btn-primary btn-full forming-cta" onclick="showPage('decision-type'); return false;">
+                        Make another decision
+                    </button>
+
+                    <!-- Helper text -->
+                    <details class="forming-why">
+                        <summary>Why 5 decisions?</summary>
+                        <p>We wait until there's enough signal to avoid showing misleading patterns. Quality insights require real data.</p>
+                    </details>
+                </div>
+            </div>
+
+            <!-- Full Profile Content -->
+            <div class="dna-profile-content" id="dna-profile-content">
                 <a href="#" class="back-link" onclick="showPage('decisions'); return false;">← Back</a>
                 <h1>Your Decision DNA</h1>
 

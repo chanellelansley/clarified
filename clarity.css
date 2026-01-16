@@ -16094,3 +16094,157 @@ textarea:focus,
     margin-top: 32px;
     margin-bottom: 24px;
 }
+
+/* ============================================
+   DNA PROFILE - FORMING STATE (Empty State)
+   ============================================ */
+
+.dna-profile-forming {
+    min-height: 100vh;
+    padding: 24px var(--pad-page);
+    background: var(--background);
+}
+
+.forming-card {
+    max-width: 480px;
+    margin: 40px auto 0;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 40px 32px;
+    text-align: center;
+}
+
+.forming-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    background: var(--brand-soft);
+    border-radius: 50%;
+    margin: 0 auto 24px;
+    color: var(--brand-primary);
+}
+
+.forming-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+}
+
+.forming-subtext {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 32px;
+}
+
+.forming-subtext span {
+    font-weight: 600;
+    color: var(--brand-primary);
+}
+
+/* Progress indicator */
+.forming-progress {
+    margin-bottom: 32px;
+}
+
+.forming-progress-bar {
+    height: 8px;
+    background: var(--gray-200);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.forming-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--brand-primary), #68B89B);
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+.forming-progress-text {
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+/* Preview section */
+.forming-preview {
+    background: var(--gray-50);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 28px;
+    text-align: left;
+}
+
+.preview-heading {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+}
+
+.preview-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.preview-list li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    font-size: 14px;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.preview-list li:last-child {
+    border-bottom: none;
+}
+
+.preview-list li svg {
+    color: var(--brand-primary);
+    flex-shrink: 0;
+    opacity: 0.7;
+}
+
+.preview-list li span {
+    opacity: 0.85;
+}
+
+/* CTA */
+.forming-cta {
+    margin-bottom: 24px;
+}
+
+/* Why 5 decisions helper */
+.forming-why {
+    text-align: left;
+}
+
+.forming-why summary {
+    font-size: 13px;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 8px 0;
+    user-select: none;
+}
+
+.forming-why summary:hover {
+    color: var(--brand-primary);
+}
+
+.forming-why p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    padding: 8px 0 0 0;
+    margin: 0;
+}
