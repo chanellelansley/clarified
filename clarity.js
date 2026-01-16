@@ -574,6 +574,8 @@ function showPage(pageName) {
             console.log('📄 Calling loadAccountSubscriptionInfo for account page');
             window.loadAccountSubscriptionInfo();
         }
+        // Initialize Clarity Check feedback form on account page
+        initClarityCheck('clarity-check-account', 'account', null);
     }
 
     // Scroll to top
@@ -3167,6 +3169,10 @@ async function generateDeepResults() {
     if (typeof trackEvent === 'function') {
         trackEvent('life_decision_completed_free');
     }
+
+    // Initialize Clarity Check feedback form
+    const decisionId = deepDecisionState.savedDecisionId || null;
+    initClarityCheck('clarity-check-recommendation', 'recommendation', decisionId);
 }
 
 async function saveCompletedDecision() {
@@ -5190,7 +5196,8 @@ function closeUpgradeModal() {
 }
 
 async function upgradeToPro() {
-    console.log('[UPGRADE] User clicked upgrade to Pro');
+    const plan = selectedBillingPeriod === 'annual' ? 'pro_annual' : 'pro_monthly';
+    console.log('[UPGRADE] Button clicked', { plan, billingPeriod: selectedBillingPeriod });
 
     // Track analytics event
     if (typeof trackEvent === 'function') {
@@ -5199,17 +5206,30 @@ async function upgradeToPro() {
 
     // Check if user is signed in
     let currentUser = window.supabaseClient?.getCurrentUser();
+    console.log('[UPGRADE] getCurrentUser result:', currentUser ? { id: currentUser.id, email: currentUser.email } : null);
+
     if (!currentUser && window.supabaseClient?.getSupabase()?.auth) {
+        console.log('[UPGRADE] Checking session...');
         const { data: { session } } = await window.supabaseClient.getSupabase().auth.getSession();
         currentUser = session?.user;
+        console.log('[UPGRADE] Session check result:', currentUser ? { id: currentUser.id, email: currentUser.email } : null);
     }
 
     if (!currentUser) {
         // User needs to sign up first
+        console.log('[UPGRADE] No authenticated user, showing signup prompt');
         closeUpgradeModal();
         showSignupPrompt('upgrade');
         return;
     }
+
+    // Prepare checkout request
+    const checkoutPayload = {
+        userId: currentUser.id,
+        email: currentUser.email,
+        plan: plan
+    };
+    console.log('[UPGRADE] Calling checkout API with:', checkoutPayload);
 
     // Redirect to Stripe checkout
     try {
@@ -5218,24 +5238,32 @@ async function upgradeToPro() {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                userId: currentUser.id,
-                email: currentUser.email,
-                plan: selectedBillingPeriod === 'annual' ? 'pro_annual' : 'pro_monthly'
-            })
+            body: JSON.stringify(checkoutPayload)
         });
 
-        if (response.ok) {
-            const { url } = await response.json();
-            window.location.href = url;
+        const responseData = await response.json();
+        console.log('[UPGRADE] API response:', { status: response.status, data: responseData });
+
+        if (response.ok && responseData.url) {
+            console.log('[UPGRADE] Redirecting to Stripe checkout...');
+            window.location.href = responseData.url;
         } else {
-            const errorData = await response.json();
-            console.error('[UPGRADE] Failed to create checkout session:', errorData);
-            alert('Unable to start checkout. Please try again.');
+            // Handle specific error types
+            if (responseData.error === 'not_authenticated') {
+                console.log('[UPGRADE] Server says not authenticated, showing signup');
+                closeUpgradeModal();
+                showSignupPrompt('upgrade');
+            } else if (responseData.error === 'stripe_not_configured') {
+                console.error('[UPGRADE] Stripe not configured on server');
+                showToast('Checkout is temporarily unavailable. Please try again later.', 'error');
+            } else {
+                console.error('[UPGRADE] Checkout failed:', responseData.error);
+                showToast('Unable to start checkout. Please try again.', 'error');
+            }
         }
     } catch (error) {
-        console.error('[UPGRADE] Error creating checkout session:', error);
-        alert('Unable to start checkout. Please try again.');
+        console.error('[UPGRADE] Network or parsing error:', error);
+        showToast('Connection error. Please check your internet and try again.', 'error');
     }
 }
 
@@ -8045,10 +8073,10 @@ const SIGNUP_PROMPTS = {
     },
     upgrade: {
         icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
         </svg>`,
-        title: 'Create an account to continue',
-        message: 'Sign up first, then you can upgrade to Pro for unlimited decisions.'
+        title: 'Create a free account first',
+        message: 'Create a free account to protect your clarity — then you can upgrade anytime.'
     }
 };
 
@@ -9273,3 +9301,285 @@ window.closeDNAStory = closeDNAStory;
 window.nextDNAScreen = nextDNAScreen;
 window.prevDNAScreen = prevDNAScreen;
 window.downloadDNACard = downloadDNACard;
+
+// ============================================
+// CLARITY CHECK FEEDBACK COMPONENT
+// ============================================
+
+// Reason tags per clarity score
+const CLARITY_CHECK_TAGS = {
+    high: [
+        'Seeing tradeoffs clearly',
+        'Confirmed what I already felt',
+        'Helped me stop spiraling',
+        'The comparison view',
+        'Something else'
+    ],
+    medium: [
+        'Needed more nuance',
+        "Didn't reflect my priorities",
+        'Too generic',
+        'Wanted another angle',
+        'Hard to trust the result'
+    ],
+    low: [
+        'Felt off / wrong',
+        'Oversimplified',
+        'Missed something important',
+        "Didn't match my situation",
+        'Confusing'
+    ]
+};
+
+// State for clarity check form
+let clarityCheckState = {
+    score: null,
+    selectedTags: [],
+    decisionId: null,
+    page: null,
+    submitted: false
+};
+
+function initClarityCheck(containerId, page, decisionId = null) {
+    const container = document.getElementById(containerId);
+    if (!container) {
+        console.warn('[ClarityCheck] Container not found:', containerId);
+        return;
+    }
+
+    // Reset state
+    clarityCheckState = {
+        score: null,
+        selectedTags: [],
+        decisionId: decisionId,
+        page: page,
+        submitted: false
+    };
+
+    // Show the container
+    container.style.display = 'block';
+
+    // Reset to initial state
+    renderClarityCheckInitial(containerId);
+
+    console.log('[ClarityCheck] Initialized:', { containerId, page, decisionId });
+}
+
+function renderClarityCheckInitial(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    container.innerHTML = `
+        <div class="clarity-check-card">
+            <h4 class="clarity-check-title">Did this help you feel clearer?</h4>
+            <div class="clarity-check-buttons">
+                <button class="clarity-btn" data-score="high" onclick="selectClarityScore('${containerId}', 'high')">
+                    <span class="clarity-btn-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </span>
+                    <span class="clarity-btn-text">Yes, very clear</span>
+                </button>
+                <button class="clarity-btn" data-score="medium" onclick="selectClarityScore('${containerId}', 'medium')">
+                    <span class="clarity-btn-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                    </span>
+                    <span class="clarity-btn-text">Somewhat</span>
+                </button>
+                <button class="clarity-btn" data-score="low" onclick="selectClarityScore('${containerId}', 'low')">
+                    <span class="clarity-btn-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </span>
+                    <span class="clarity-btn-text">Not really</span>
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+function selectClarityScore(containerId, score) {
+    clarityCheckState.score = score;
+    clarityCheckState.selectedTags = [];
+
+    console.log('[ClarityCheck] Score selected:', score);
+
+    renderClarityCheckTags(containerId, score);
+}
+
+function renderClarityCheckTags(containerId, score) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    const tags = CLARITY_CHECK_TAGS[score];
+    const scoreLabels = {
+        high: 'Yes, very clear',
+        medium: 'Somewhat',
+        low: 'Not really'
+    };
+
+    container.innerHTML = `
+        <div class="clarity-check-card">
+            <div class="clarity-check-header">
+                <button class="clarity-back-btn" onclick="renderClarityCheckInitial('${containerId}')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                </button>
+                <span class="clarity-check-selected">${scoreLabels[score]}</span>
+            </div>
+            <p class="clarity-check-prompt">What made the difference? <span class="tag-limit-note">(pick up to 2)</span></p>
+            <div class="clarity-check-tags">
+                ${tags.map(tag => `
+                    <button class="clarity-tag" data-tag="${tag}" onclick="toggleClarityTag('${containerId}', '${tag.replace(/'/g, "\\'")}')">
+                        ${tag}
+                    </button>
+                `).join('')}
+            </div>
+            <details class="clarity-check-freetext">
+                <summary>Anything you want us to know?</summary>
+                <div class="freetext-content">
+                    <textarea
+                        id="clarity-freetext-${containerId}"
+                        class="clarity-textarea"
+                        placeholder="One sentence is perfect."
+                        maxlength="240"
+                        rows="2"
+                        oninput="updateCharCount('${containerId}')"
+                    ></textarea>
+                    <div class="char-counter"><span id="char-count-${containerId}">0</span>/240</div>
+                </div>
+            </details>
+            <button class="btn btn-primary btn-full clarity-submit-btn" onclick="submitClarityCheck('${containerId}')">
+                Send feedback
+            </button>
+        </div>
+    `;
+}
+
+function toggleClarityTag(containerId, tag) {
+    const tagIndex = clarityCheckState.selectedTags.indexOf(tag);
+
+    if (tagIndex > -1) {
+        // Remove tag
+        clarityCheckState.selectedTags.splice(tagIndex, 1);
+    } else {
+        // Add tag (max 2)
+        if (clarityCheckState.selectedTags.length >= 2) {
+            showToast('You can select up to 2 options');
+            return;
+        }
+        clarityCheckState.selectedTags.push(tag);
+    }
+
+    // Update UI
+    const container = document.getElementById(containerId);
+    const tagButtons = container.querySelectorAll('.clarity-tag');
+    tagButtons.forEach(btn => {
+        const btnTag = btn.dataset.tag;
+        if (clarityCheckState.selectedTags.includes(btnTag)) {
+            btn.classList.add('selected');
+        } else {
+            btn.classList.remove('selected');
+        }
+    });
+
+    console.log('[ClarityCheck] Tags selected:', clarityCheckState.selectedTags);
+}
+
+function updateCharCount(containerId) {
+    const textarea = document.getElementById(`clarity-freetext-${containerId}`);
+    const counter = document.getElementById(`char-count-${containerId}`);
+    if (textarea && counter) {
+        counter.textContent = textarea.value.length;
+    }
+}
+
+async function submitClarityCheck(containerId) {
+    if (clarityCheckState.submitted) return;
+
+    const freeText = document.getElementById(`clarity-freetext-${containerId}`)?.value?.trim() || '';
+
+    console.log('[ClarityCheck] Submitting:', {
+        score: clarityCheckState.score,
+        tags: clarityCheckState.selectedTags,
+        freeText: freeText ? `${freeText.substring(0, 20)}...` : null,
+        page: clarityCheckState.page,
+        decisionId: clarityCheckState.decisionId
+    });
+
+    // Get current user (may be null for anonymous)
+    const currentUser = window.supabaseClient?.getCurrentUser();
+    const userId = currentUser?.id || null;
+
+    // Prepare payload
+    const payload = {
+        clarity_score: clarityCheckState.score,
+        reason_tags: clarityCheckState.selectedTags,
+        page: clarityCheckState.page,
+        user_id: userId
+    };
+
+    if (freeText) {
+        payload.free_text = freeText;
+    }
+
+    if (clarityCheckState.decisionId) {
+        payload.decision_id = clarityCheckState.decisionId;
+    }
+
+    try {
+        const response = await fetch('/api/submit-feedback', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.ok) {
+            console.log('[ClarityCheck] Submitted successfully:', result.id);
+        } else {
+            console.error('[ClarityCheck] API error:', result);
+            // Still show success to user - don't block on errors
+        }
+    } catch (error) {
+        console.error('[ClarityCheck] Network error:', error);
+        // Still show success to user
+    }
+
+    // Mark as submitted and show confirmation
+    clarityCheckState.submitted = true;
+    renderClarityCheckSuccess(containerId);
+}
+
+function renderClarityCheckSuccess(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    container.innerHTML = `
+        <div class="clarity-check-card clarity-check-success">
+            <div class="success-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+            </div>
+            <p class="success-message">Thank you — this helps us improve clarity for everyone.</p>
+        </div>
+    `;
+}
+
+// Make clarity check functions globally accessible
+window.initClarityCheck = initClarityCheck;
+window.selectClarityScore = selectClarityScore;
+window.toggleClarityTag = toggleClarityTag;
+window.updateCharCount = updateCharCount;
+window.submitClarityCheck = submitClarityCheck;

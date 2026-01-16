@@ -901,6 +901,15 @@
                     </div>
                 </div>
 
+                <!-- Give Feedback Section -->
+                <div class="card" id="account-feedback-card">
+                    <h3 class="card-heading">Give feedback</h3>
+                    <p class="card-description">Help us improve Clarified for everyone.</p>
+                    <div id="clarity-check-account" class="clarity-check-container">
+                        <!-- Populated by initClarityCheck() on page load -->
+                    </div>
+                </div>
+
                 <!-- Sign Out -->
                 <div class="text-center mt-xl" id="sign-out-section" style="display: none;">
                     <a href="#" class="link-muted" onclick="signOut(); return false;">Sign out</a>
@@ -2092,10 +2101,15 @@
                         </button>
                     </div>
 
-                    <!-- Feedback escape hatch -->
+                    <!-- Feedback escape hatch (legacy - keep for backwards compat) -->
                     <div class="feedback-escape-hatch">
                         <a href="#" class="feedback-link" onclick="openFeedbackModal('recommendation_final'); return false;">Something feel off?</a>
                     </div>
+                </div>
+
+                <!-- Clarity Check Feedback Form -->
+                <div id="clarity-check-recommendation" class="clarity-check-container" style="display: none;">
+                    <!-- Populated by initClarityCheck() -->
                 </div>
             </div>
         </div>
