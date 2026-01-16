@@ -2085,14 +2085,21 @@
                                 <!-- Risks will be populated dynamically -->
                             </ul>
                         </div>
-                    </div>
-                </div>
 
-                <!-- Reflection Prompt -->
-                <div class="reflection-prompt-card mt-xl">
-                    <h3 class="reflection-prompt-title">What would need to change for this to feel different?</h3>
-                    <p class="reflection-prompt-subtitle">Sometimes just naming it is enough to move forward.</p>
-                    <textarea id="reflection-prompt-input" class="reflection-prompt-textarea" placeholder="If I knew that... or If I felt sure about..." rows="3"></textarea>
+                        <!-- Reflection Prompt (Collapsible, optional) -->
+                        <details class="reflection-collapsible">
+                            <summary class="reflection-summary">
+                                <span>What would need to change for this to feel different?</span>
+                                <svg class="chevron-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </summary>
+                            <div class="reflection-content">
+                                <p class="reflection-prompt-subtitle">Sometimes just naming it is enough to move forward.</p>
+                                <textarea id="reflection-prompt-input" class="reflection-prompt-textarea" placeholder="If I knew that... or If I felt sure about..." rows="3"></textarea>
+                            </div>
+                        </details>
+                    </div>
                 </div>
 
                 <!-- Bottom CTA -->

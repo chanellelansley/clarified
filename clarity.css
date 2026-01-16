@@ -12303,26 +12303,53 @@ p, li {
     border-radius: 8px;
 }
 
-/* Reflection Prompt Card */
-.reflection-prompt-card {
-    background: var(--gray-50);
+/* Reflection Prompt - Collapsible */
+.reflection-collapsible {
+    margin-top: 1rem;
     border: 1px solid var(--gray-200);
     border-radius: 12px;
-    padding: 24px;
-    text-align: center;
+    background: var(--gray-50);
+    overflow: hidden;
 }
 
-.reflection-prompt-title {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: var(--gray-900);
-    margin-bottom: 8px;
+.reflection-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--gray-600);
+    list-style: none;
+    transition: background 0.2s ease;
+}
+
+.reflection-summary::-webkit-details-marker {
+    display: none;
+}
+
+.reflection-summary:hover {
+    background: var(--gray-100);
+}
+
+.reflection-summary .chevron-icon {
+    transition: transform 0.2s ease;
+    color: var(--gray-400);
+}
+
+.reflection-collapsible[open] .chevron-icon {
+    transform: rotate(180deg);
+}
+
+.reflection-content {
+    padding: 0 1.25rem 1.25rem;
 }
 
 .reflection-prompt-subtitle {
     font-size: 0.875rem;
     color: var(--gray-500);
-    margin-bottom: 16px;
+    margin-bottom: 12px;
 }
 
 .reflection-prompt-textarea {
