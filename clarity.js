@@ -7582,16 +7582,81 @@ function startQuickWithPrompt(promptText) {
 }
 
 // Start another decision (from results page)
-function startAnotherDecision() {
-    // Check guest limit before starting another decision
-    if (isGuestMode && !checkGuestLimit()) {
-        return; // Don't proceed if limit reached
+async function startAnotherDecision() {
+    console.log('[DECISION] Starting another decision');
+
+    // Check paywall (bypass in dev mode)
+    if (shouldBypassPaywall()) {
+        clearDecisionForms();
+        showPage('deep-1');
+        return;
     }
 
-    // Clear previous decision data
-    clearDecisionForms();
+    // Check localStorage for free Life decision usage
+    const freeLifeDecisionUsed = localStorage.getItem('free_life_decision_used') === 'true';
 
-    showPage('quick-1');
+    // Check if user is signed in
+    let currentUser = window.supabaseClient?.getCurrentUser();
+    if (!currentUser && window.supabaseClient?.getSupabase()?.auth) {
+        const { data: { session } } = await window.supabaseClient.getSupabase().auth.getSession();
+        currentUser = session?.user;
+    }
+
+    if (currentUser) {
+        // Signed-in user: check subscription
+        const subscriptionData = await window.supabaseClient.getUserSubscription();
+        const isPro = subscriptionData?.subscription?.plan === 'pro' && subscriptionData?.subscription?.status === 'active';
+        const isBeta = subscriptionData?.subscription?.is_beta_user;
+
+        console.log('[DECISION] Signed-in user check:', { isPro, isBeta, freeLifeDecisionUsed });
+
+        if (isBeta || isPro) {
+            // Pro users can start another decision
+            clearDecisionForms();
+            showPage('deep-1');
+        } else if (freeLifeDecisionUsed) {
+            // Free user has used their 1 free decision - show paywall with context
+            showAnotherDecisionPaywall();
+        } else {
+            // Free user hasn't used their free decision yet
+            clearDecisionForms();
+            showPage('deep-1');
+        }
+    } else {
+        // Anonymous user
+        console.log('[DECISION] Anonymous user check:', { freeLifeDecisionUsed });
+
+        if (freeLifeDecisionUsed) {
+            // Show paywall with context
+            showAnotherDecisionPaywall();
+        } else {
+            clearDecisionForms();
+            showPage('deep-1');
+        }
+    }
+}
+
+// Show paywall with "another decision" context
+function showAnotherDecisionPaywall() {
+    console.log('[PAYWALL] Showing paywall for another decision');
+
+    // Track analytics event
+    if (typeof trackEvent === 'function') {
+        trackEvent('paywall_shown_another_decision');
+    }
+
+    // Update paywall copy for this context
+    const titleEl = document.getElementById('upgrade-modal-title');
+    const messageEl = document.getElementById('upgrade-modal-message');
+
+    if (titleEl) {
+        titleEl.textContent = 'Want clarity on another decision?';
+    }
+    if (messageEl) {
+        messageEl.textContent = 'Pro gives you unlimited decisions and saved history.';
+    }
+
+    openUpgradeModal();
 }
 
 // Update nav for guest mode
