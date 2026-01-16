@@ -7427,8 +7427,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log('🔄 Initializing Clarity app...');
 
     // Check for password recovery flow in URL hash
+    // Only redirect to reset-password.html for actual recovery flows, not OAuth callbacks
     const hash = window.location.hash;
-    if (hash && (hash.includes('type=recovery') || hash.includes('access_token'))) {
+    if (hash && hash.includes('type=recovery')) {
         console.log('🔐 Password recovery detected, redirecting to reset page...');
         // Redirect to reset password page with the hash
         window.location.href = '/reset-password.html' + hash;
