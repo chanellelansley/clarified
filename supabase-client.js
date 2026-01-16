@@ -557,50 +557,24 @@ async function checkDecisionLimit(decisionType) {
         return { allowed: true, isBeta: true };
     }
 
-    if (decisionType === 'quick') {
-        // Everyday decisions
-        if (plan === 'pro') {
-            return { allowed: true }; // Unlimited for Pro
-        }
-
-        // Free plan: 5 per month
-        if (usage.everyday_decisions_used >= 5) {
-            return {
-                allowed: false,
-                reason: 'limit_reached',
-                message: 'You have used all 5 Everyday decisions this month',
-                upgradeOptions: ['pro']
-            };
-        }
-
+    // Pro users have unlimited decisions
+    if (plan === 'pro') {
         return { allowed: true };
-    } else {
-        // Life decisions
-        if (plan === 'pro') {
-            // Pro: 2 per month
-            if (usage.life_decisions_used >= 2) {
-                return {
-                    allowed: false,
-                    reason: 'limit_reached',
-                    message: 'You have used both Life decisions this month',
-                    upgradeOptions: ['pay_per_use']
-                };
-            }
-            return { allowed: true };
-        }
-
-        // Free plan: 1 trial
-        if (usage.trial_life_used) {
-            return {
-                allowed: false,
-                reason: 'trial_used',
-                message: 'Free trial used',
-                upgradeOptions: ['pro', 'pay_per_use']
-            };
-        }
-
-        return { allowed: true, isTrial: true };
     }
+
+    // Free users: 1 decision total (checked via localStorage in clarity.js)
+    // This function now serves as a backup check
+    const freeDecisionUsed = localStorage.getItem('free_life_decision_used') === 'true';
+    if (freeDecisionUsed) {
+        return {
+            allowed: false,
+            reason: 'limit_reached',
+            message: 'Upgrade for unlimited decisions',
+            upgradeOptions: ['pro']
+        };
+    }
+
+    return { allowed: true, isFreeDecision: true };
 }
 
 async function trackDecisionUsage(decisionType) {

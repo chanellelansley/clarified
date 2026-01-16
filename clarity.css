@@ -3925,8 +3925,34 @@ p, li {
     margin-bottom: 24px;
 }
 
+.empty-state-description {
+    color: var(--text-secondary);
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 24px;
+    max-width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .empty-state .btn-primary {
     display: inline-block;
+}
+
+/* DNA Hint Card (shown when 1+ decisions but not enough for DNA) */
+.dna-hint-card {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.dna-hint-text {
+    font-size: var(--text-small);
+    color: var(--text-tertiary);
+    margin: 0;
 }
 
 /* Decision Profile Card */
@@ -6056,6 +6082,12 @@ p, li {
     color: var(--sage-green);
     font-weight: 500;
     margin: var(--spacing-xs) 0 0;
+}
+
+.pricing-card-annual {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    margin-top: var(--spacing-xs);
 }
 
 /* Pro Benefits Grid */
@@ -10153,6 +10185,53 @@ p, li {
 /* ============================================
    UPGRADE MODAL
    ============================================ */
+
+/* Billing Toggle */
+.billing-toggle {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 1.5rem;
+    background: var(--gray-100);
+    border-radius: var(--radius-md);
+    padding: 4px;
+    max-width: 240px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.billing-option {
+    flex: 1;
+    padding: 0.5rem 1rem;
+    border: none;
+    background: transparent;
+    font-family: var(--font-body);
+    font-size: var(--text-small);
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-base);
+}
+
+.billing-option:hover {
+    color: var(--text-primary);
+}
+
+.billing-option.active {
+    background: white;
+    color: var(--brand-primary);
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.upgrade-option-savings {
+    font-family: var(--font-body);
+    font-size: var(--text-small);
+    color: var(--brand-primary);
+    font-weight: 500;
+    margin-top: 0.25rem;
+}
 
 .upgrade-options {
     display: flex;

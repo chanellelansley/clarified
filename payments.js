@@ -219,10 +219,8 @@ async function loadAccountSubscriptionInfo() {
             const everydayUsage = document.getElementById('everyday-usage');
             const lifeUsage = document.getElementById('life-usage');
 
-            if (planName) planName.textContent = 'Free Plan';
-            if (planSubtitle) planSubtitle.textContent = '5 Everyday decisions/month';
-            if (everydayUsage) everydayUsage.textContent = '0 of 5 used';
-            if (lifeUsage) lifeUsage.textContent = '1 free trial available';
+            if (planName) planName.textContent = 'Free';
+            if (planSubtitle) planSubtitle.textContent = '1 meaningful decision — free';
             return;
         }
 
@@ -244,7 +242,7 @@ async function loadAccountSubscriptionInfo() {
         console.log('[Account] Plan:', plan, 'Subscription:', subscription);
 
         if (plan === 'pro') {
-            if (planName) planName.textContent = 'Pro Plan';
+            if (planName) planName.textContent = 'Clarified Pro';
             const renewDate = subscription.current_period_end
                 ? new Date(subscription.current_period_end).toLocaleDateString()
                 : '';
@@ -265,8 +263,8 @@ async function loadAccountSubscriptionInfo() {
                 }
             }
         } else {
-            if (planName) planName.textContent = 'Free Plan';
-            if (planSubtitle) planSubtitle.textContent = '5 Everyday decisions/month';
+            if (planName) planName.textContent = 'Free';
+            if (planSubtitle) planSubtitle.textContent = '1 meaningful decision — free';
 
             // Show upgrade card for free users
             if (upgradeCard) upgradeCard.style.display = 'block';

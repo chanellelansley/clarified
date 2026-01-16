@@ -763,14 +763,8 @@ const handleDecisionCardClick = async (card) => {
 
             console.log('[Paywall] Quick check:', { isPro, isBeta, everydayUsed });
 
-            if (isPro || isBeta) {
-                // Pro/Beta users have unlimited Quick decisions
-                startQuickClarity();
-            } else if (everydayUsed >= 5) {
-                alert('You\'ve used your 5 free Everyday decisions this month. Upgrade to Pro for unlimited access!');
-            } else {
-                startQuickClarity();
-            }
+            // All signed-in users can use Quick decisions
+            startQuickClarity();
         } else {
             startQuickClarity();
         }
@@ -800,7 +794,7 @@ const handleDecisionCardClick = async (card) => {
             console.log('[Paywall] Life decision check (signed in):', { isPro, isBeta, freeLifeDecisionUsed });
 
             if (isBeta || isPro) {
-                // Pro/Beta users have unlimited Life decisions
+                // Pro/Beta users have unlimited decisions
                 startDeepClarity();
             } else if (!freeLifeDecisionUsed) {
                 // Free signed-in users get 1 free Life decision
@@ -5118,11 +5112,47 @@ function showLifeDecisionPaywall() {
     openUpgradeModal();
 }
 
+// Track selected billing period (default to annual)
+let selectedBillingPeriod = 'annual';
+
+function selectBillingPeriod(period) {
+    selectedBillingPeriod = period;
+
+    // Update toggle button states
+    const buttons = document.querySelectorAll('.billing-option');
+    buttons.forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.billing === period) {
+            btn.classList.add('active');
+        }
+    });
+
+    // Update price display
+    const priceDisplay = document.getElementById('pro-price-display');
+    const savingsDisplay = document.getElementById('pro-savings-display');
+
+    if (period === 'annual') {
+        if (priceDisplay) priceDisplay.textContent = '$80/year';
+        if (savingsDisplay) {
+            savingsDisplay.textContent = '2 months free';
+            savingsDisplay.style.display = 'block';
+        }
+    } else {
+        if (priceDisplay) priceDisplay.textContent = '$8/month';
+        if (savingsDisplay) savingsDisplay.style.display = 'none';
+    }
+}
+
 function openUpgradeModal() {
     const modal = document.getElementById('upgrade-modal');
     if (modal) {
         modal.classList.add('active');
         document.body.style.overflow = 'hidden';
+
+        // Default to Annual after user has completed their free decision
+        const freeLifeDecisionUsed = localStorage.getItem('free_life_decision_used') === 'true';
+        const defaultPeriod = freeLifeDecisionUsed ? 'annual' : 'annual';
+        selectBillingPeriod(defaultPeriod);
     }
 }
 
@@ -5166,7 +5196,7 @@ async function upgradeToPro() {
             body: JSON.stringify({
                 userId: currentUser.id,
                 email: currentUser.email,
-                plan: 'pro_monthly' // Options: 'pro_monthly' or 'pro_annual'
+                plan: selectedBillingPeriod === 'annual' ? 'pro_annual' : 'pro_monthly'
             })
         });
 
@@ -5535,25 +5565,17 @@ function renderDNACard(decisions) {
         return;
     }
 
-    // State A: Building — progress card with friendlier messaging
-    const progress = (decisionCount / DNA_UNLOCK_THRESHOLD) * 100;
-    container.innerHTML = `
-        <div class="dna-locked-card">
-            <div class="dna-locked-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
-                    <path d="M12 6v6l4 2"/>
-                    <circle cx="12" cy="12" r="3" fill="currentColor" opacity="0.3"/>
-                </svg>
+    // State A: Not enough decisions — show nothing (empty state handles zero decisions)
+    // Only show subtle hint when user has made 1+ decisions but not yet reached threshold
+    if (decisionCount > 0) {
+        container.innerHTML = `
+            <div class="dna-locked-card dna-hint-card">
+                <p class="dna-hint-text">Your Decision Profile unlocks after ${DNA_UNLOCK_THRESHOLD} decisions</p>
             </div>
-            <h3>Your Decision DNA is building...</h3>
-            <p class="dna-subtitle">Each decision teaches us how you think</p>
-            <div class="dna-progress-bar">
-                <div class="dna-progress-fill" style="width: ${progress}%"></div>
-            </div>
-            <span class="dna-progress-text">${decisionCount} of ${DNA_UNLOCK_THRESHOLD}</span>
-        </div>
-    `;
+        `;
+    } else {
+        container.innerHTML = '';
+    }
 }
 
 function getTopValuesFromDecisions(decisions) {
@@ -7650,10 +7672,10 @@ function showAnotherDecisionPaywall() {
     const messageEl = document.getElementById('upgrade-modal-message');
 
     if (titleEl) {
-        titleEl.textContent = 'Want clarity on another decision?';
+        titleEl.textContent = 'Upgrade for unlimited decisions';
     }
     if (messageEl) {
-        messageEl.textContent = 'Pro gives you unlimited decisions and saved history.';
+        messageEl.textContent = 'Pro gives you unlimited decisions, saved history, and decision insights.';
     }
 
     openUpgradeModal();
@@ -7828,7 +7850,7 @@ const SIGNUP_PROMPTS = {
             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
         </svg>`,
         title: 'Create an account to upgrade',
-        message: 'Sign up first, then you can upgrade to Pro for unlimited Life decisions.'
+        message: 'Sign up first, then you can upgrade to Pro for unlimited decisions.'
     }
 };
 

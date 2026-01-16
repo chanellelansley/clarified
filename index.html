@@ -341,23 +341,14 @@
             PRICING MODEL:
 
             FREE:
-            - 5 Everyday decisions / month
-            - 1 Life decision free trial (requires credit card)
-            - No what-if scenarios
-            - No Decision Profile
-            - No outcome tracking
+            - 1 meaningful decision total (not per month)
 
-            PRO ($8/month):
-            - Unlimited Everyday decisions
-            - 2 Life decisions / month
-            - What-if scenarios included
-            - Full Decision Profile
-            - Outcome tracking
-
-            PAY-PER-USE:
-            - $5 per Life decision (no subscription)
-            - Includes what-if scenarios for that decision
-            - No Profile or outcome tracking
+            PRO ($8/month or $80/year):
+            - Unlimited decisions
+            - Save and revisit recommendations
+            - What-if scenarios
+            - Outcome tracking over time
+            - Decision patterns & insights
         -->
         <!-- Interstitial: Set expectations before the flow -->
         <div class="page" id="page-decision-type">
@@ -457,14 +448,16 @@
             <!-- Empty State (shown when no decisions) -->
             <div class="empty-state" id="empty-state" style="display: none;">
                 <div class="empty-icon">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="1.5">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <path d="M12 6v6l4 2"></path>
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                        <path d="M2 17l10 5 10-5"/>
+                        <path d="M2 12l10 5 10-5"/>
                     </svg>
                 </div>
-                <h3>No decisions yet</h3>
+                <h3>This is where your decisions live</h3>
+                <p class="empty-state-description">Work through a decision, and it'll show up here — so you can revisit it whenever you need to.</p>
                 <button class="btn-primary btn-cta" onclick="showPage('decision-type'); return false;">
-                    Get started
+                    Make your first decision
                 </button>
             </div>
 
@@ -774,27 +767,6 @@
                         </div>
                                             </div>
 
-                    <div class="plan-usage">
-                        <div class="usage-item">
-                            <div class="usage-row">
-                                <span class="usage-label">Everyday decisions</span>
-                                <span class="usage-value" id="everyday-usage">Loading...</span>
-                            </div>
-                            <div class="progress-bar-usage">
-                                <div class="progress-fill-usage" id="everyday-progress" style="width: 0%"></div>
-                            </div>
-                        </div>
-                        <div class="usage-item">
-                            <div class="usage-row">
-                                <span class="usage-label">Life decisions</span>
-                                <span class="usage-value" id="life-usage">Loading...</span>
-                            </div>
-                            <div class="progress-bar-usage">
-                                <div class="progress-fill-usage" id="life-progress" style="width: 0%"></div>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Subscription Management (for Pro users) -->
                     <div class="subscription-management" id="subscription-management" style="display: none;">
                         <p>You're on the Pro plan. Next billing date: <span id="next-billing-date">—</span></p>
@@ -810,14 +782,15 @@
                     <div class="pricing-cards">
                         <div class="pricing-card pricing-card-recommended">
                             <div class="pricing-card-header">
-                                <h4 class="pricing-card-title">Pro Plan</h4>
+                                <h4 class="pricing-card-title">Clarified Pro</h4>
                                 <div class="pricing-card-price">
                                     <span class="price-amount">$8</span>
                                     <span class="price-period">/month</span>
                                 </div>
+                                <div class="pricing-card-annual">or $80/year (2 months free)</div>
                             </div>
                             <button class="btn btn-primary btn-full" onclick="upgradeToPro(); return false;">
-                                Upgrade to Pro
+                                Upgrade for unlimited decisions
                             </button>
                         </div>
                     </div>
@@ -828,31 +801,13 @@
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="20 6 9 17 4 12"></polyline>
                             </svg>
-                            <span>Unlimited Everyday</span>
+                            <span>Unlimited decisions</span>
                         </div>
                         <div class="benefit-item">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="20 6 9 17 4 12"></polyline>
                             </svg>
-                            <span>2 Life decisions/month ($3 each additional)</span>
-                        </div>
-                        <div class="benefit-item">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="20 6 9 17 4 12"></polyline>
-                            </svg>
-                            <span>Full analysis & tracking</span>
-                        </div>
-                        <div class="benefit-item">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="20 6 9 17 4 12"></polyline>
-                            </svg>
-                            <span>Save all decisions</span>
-                        </div>
-                        <div class="benefit-item">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="20 6 9 17 4 12"></polyline>
-                            </svg>
-                            <span>Outcome tracking</span>
+                            <span>Save and revisit recommendations</span>
                         </div>
                         <div class="benefit-item">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -860,24 +815,21 @@
                             </svg>
                             <span>What-if scenarios</span>
                         </div>
+                        <div class="benefit-item">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span>Outcome tracking over time</span>
+                        </div>
+                        <div class="benefit-item">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span>Decision patterns & insights</span>
+                        </div>
                     </div>
 
                     <p class="guarantee-text">7-day money-back guarantee</p>
-                </div>
-
-                <!-- Life Decision Purchase Card -->
-                <div class="card" id="life-decision-card" style="display: none; background: #F9FAFB; border: 1px solid #E5E7EB; padding: 24px; margin-top: 24px;">
-                    <div style="margin-bottom: 16px;">
-                        <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 4px; color: var(--text-primary);">Need just one Life decision?</h3>
-                        <p style="font-size: 14px; color: #6B7280; margin: 0;">Get a single deep analysis without subscribing</p>
-                    </div>
-                    <div style="margin: 16px 0;">
-                        <span style="font-size: 24px; font-weight: 600; color: var(--text-primary);">$5</span>
-                        <span style="color: #6B7280; font-size: 14px; margin-left: 4px;">one-time</span>
-                    </div>
-                    <button class="btn" style="background: white; border: 1px solid #418F6F; color: #418F6F; padding: 10px 20px; border-radius: 8px; font-weight: 500; width: auto;" onclick="buyLifeDecision(); return false;">
-                        Buy Life Decision
-                    </button>
                 </div>
 
                 <!-- Profile Card -->
@@ -2150,14 +2102,21 @@
             <div class="modal-body">
                 <p class="modal-subtitle" id="upgrade-modal-message">Save your decisions, revisit them when you need to, and work through new ones with the same thoughtful structure.</p>
 
+                <!-- Billing Toggle -->
+                <div class="billing-toggle" id="billing-toggle">
+                    <button class="billing-option" data-billing="monthly" onclick="selectBillingPeriod('monthly')">Monthly</button>
+                    <button class="billing-option active" data-billing="annual" onclick="selectBillingPeriod('annual')">Annual</button>
+                </div>
+
                 <!-- Upgrade Options -->
                 <div class="upgrade-options" id="upgrade-options">
                     <!-- Pro Subscription Option -->
                     <div class="upgrade-option-card" id="upgrade-option-pro">
                         <div class="upgrade-option-header">
                             <div>
-                                <h4 class="upgrade-option-title">Pro</h4>
-                                <div class="upgrade-option-price">$8/month</div>
+                                <h4 class="upgrade-option-title">Clarified Pro</h4>
+                                <div class="upgrade-option-price" id="pro-price-display">$80/year</div>
+                                <div class="upgrade-option-savings" id="pro-savings-display">2 months free</div>
                             </div>
                             <div class="upgrade-option-badge">Unlimited</div>
                         </div>
@@ -2166,29 +2125,35 @@
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <polyline points="20 6 9 17 4 12"></polyline>
                                 </svg>
-                                Unlimited Life decisions
+                                Unlimited decisions
                             </li>
                             <li>
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <polyline points="20 6 9 17 4 12"></polyline>
                                 </svg>
-                                Save and revisit your decisions
+                                Save and revisit recommendations
                             </li>
                             <li>
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <polyline points="20 6 9 17 4 12"></polyline>
                                 </svg>
-                                Decision Profile & patterns
+                                What-if scenarios
                             </li>
                             <li>
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <polyline points="20 6 9 17 4 12"></polyline>
                                 </svg>
-                                Track outcomes over time
+                                Outcome tracking over time
+                            </li>
+                            <li>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                                Decision patterns & insights
                             </li>
                         </ul>
                         <button class="btn btn-primary btn-full" onclick="upgradeToPro(); return false;">
-                            Get Pro
+                            Upgrade for unlimited decisions
                         </button>
                     </div>
                 </div>
@@ -2241,7 +2206,7 @@
             Maybe later
         </button>
 
-        <p class="save-prompt-note">5 free decisions/month • No credit card needed</p>
+        <p class="save-prompt-note">1 free decision • No credit card needed</p>
     </div>
 </div>
 
