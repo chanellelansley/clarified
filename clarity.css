@@ -5988,7 +5988,7 @@ p, li {
     text-decoration: underline;
 }
 
-/* Upgrade Card */
+/* Upgrade Card (legacy) */
 .upgrade-card {
     background: var(--white);
 }
@@ -5999,7 +5999,217 @@ p, li {
     margin: var(--spacing-xs) 0 var(--spacing-xl);
 }
 
-/* Pricing Cards */
+/* ============================================
+   ACCOUNT PAGE - REDESIGNED LAYOUT
+   ============================================ */
+
+/* Free Plan Status Card (lighter weight) */
+.card-status {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    box-shadow: none;
+    padding: var(--spacing-md) var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+}
+
+.plan-header-compact {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.plan-icon-small {
+    width: 36px;
+    height: 36px;
+    background: var(--white);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.plan-icon-small svg {
+    stroke: var(--sage-green);
+}
+
+.plan-details-compact {
+    flex: 1;
+    min-width: 0;
+}
+
+.plan-name-compact {
+    font-size: var(--text-base);
+    font-weight: 600;
+    color: var(--gray-800);
+    margin: 0;
+    line-height: 1.3;
+}
+
+.plan-subtitle-compact {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    margin: 2px 0 0 0;
+}
+
+.plan-badges {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+/* Upgrade Card - Redesigned */
+.upgrade-card-redesign {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.upgrade-heading {
+    font-family: var(--font-heading);
+    font-size: var(--text-xl);
+    font-weight: 600;
+    color: var(--text-primary);
+    text-align: center;
+    margin: 0 0 var(--spacing-lg) 0;
+}
+
+/* Pricing Block */
+.pricing-block {
+    text-align: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.price-primary {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: var(--spacing-xs);
+}
+
+.price-amount-lg {
+    font-family: var(--font-heading);
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+.price-period-lg {
+    font-size: var(--text-lg);
+    color: var(--text-secondary);
+    font-weight: 400;
+}
+
+.price-secondary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+}
+
+.price-annual {
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+}
+
+.savings-pill {
+    display: inline-block;
+    background: var(--sage-50);
+    color: var(--sage-600);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+/* Upgrade CTA Button */
+.btn-upgrade {
+    margin-bottom: var(--spacing-lg);
+}
+
+/* Pro Benefits List (Single Column) */
+.pro-benefits-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-top: 1px solid var(--gray-100);
+    padding-top: var(--spacing-md);
+}
+
+.benefit-item-compact {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-xs) 0;
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+.benefit-item-compact svg {
+    flex-shrink: 0;
+    stroke: var(--sage-green);
+}
+
+.benefit-item-compact span {
+    line-height: 1.4;
+}
+
+/* Guarantee Text */
+.guarantee-text-subtle {
+    text-align: center;
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+    margin: var(--spacing-md) 0 0;
+}
+
+/* Subscription Management (for Pro users) */
+.card-status .subscription-management {
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--gray-200);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-status .subscription-management p {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    .upgrade-card-redesign {
+        padding: var(--spacing-lg);
+    }
+
+    .price-amount-lg {
+        font-size: 2rem;
+    }
+
+    .plan-header-compact {
+        flex-wrap: wrap;
+    }
+
+    .plan-badges {
+        width: 100%;
+        margin-top: var(--spacing-xs);
+    }
+}
+
+/* ============================================
+   END ACCOUNT PAGE REDESIGN
+   ============================================ */
+
+/* Pricing Cards (legacy - kept for upgrade modal) */
 .pricing-cards {
     display: grid;
     grid-template-columns: 1fr 1fr;

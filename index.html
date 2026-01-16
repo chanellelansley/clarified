@@ -744,92 +744,94 @@
             <div class="container">
                 <h1 class="page-title">Account</h1>
 
-                <!-- Current Plan Card -->
-                <div class="card" id="current-plan-card">
-                    <div class="plan-header">
-                        <div class="plan-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <!-- Current Plan Card (Status Indicator) -->
+                <div class="card card-status" id="current-plan-card">
+                    <div class="plan-header-compact">
+                        <div class="plan-icon-small">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M12 2L2 7l10 5 10-5-10-5z"/>
                                 <path d="M2 17l10 5 10-5"/>
                                 <path d="M2 12l10 5 10-5"/>
                             </svg>
                         </div>
-                        <div class="plan-details">
-                            <h3 class="plan-name" id="plan-name">Loading...</h3>
-                            <p class="plan-subtitle" id="plan-subtitle">Please wait</p>
+                        <div class="plan-details-compact">
+                            <h3 class="plan-name-compact" id="plan-name">Loading...</h3>
+                            <p class="plan-subtitle-compact" id="plan-subtitle">Please wait</p>
+                        </div>
+                        <div class="plan-badges">
                             <div class="founding-member-badge" id="founding-member-badge" style="display: none;">
                                 <span class="badge-icon">⭐</span>
                                 <span class="badge-text">Founding Member</span>
                             </div>
                             <div class="beta-access-note" id="beta-access-note" style="display: none;">
-                                Beta access — all features unlocked
+                                Beta access
                             </div>
                         </div>
-                                            </div>
+                    </div>
 
                     <!-- Subscription Management (for Pro users) -->
                     <div class="subscription-management" id="subscription-management" style="display: none;">
-                        <p>You're on the Pro plan. Next billing date: <span id="next-billing-date">—</span></p>
+                        <p>Next billing: <span id="next-billing-date">—</span></p>
                         <button class="btn-text-danger" onclick="cancelSubscription()">Cancel subscription</button>
                     </div>
                 </div>
 
                 <!-- Upgrade to Pro Card -->
-                <div class="card upgrade-card" id="upgrade-card" style="display: none;">
-                    <h3 class="card-heading">Upgrade to Clarified Pro</h3>
+                <div class="card upgrade-card-redesign" id="upgrade-card" style="display: none;">
+                    <h3 class="upgrade-heading">Upgrade to Clarified Pro</h3>
 
-                    <!-- Pricing Card -->
-                    <div class="pricing-cards">
-                        <div class="pricing-card pricing-card-recommended">
-                            <div class="pricing-card-header">
-                                <h4 class="pricing-card-title">Clarified Pro</h4>
-                                <div class="pricing-card-price">
-                                    <span class="price-amount">$8</span>
-                                    <span class="price-period">/month</span>
-                                </div>
-                                <div class="pricing-card-annual">or $80/year (2 months free)</div>
-                            </div>
-                            <button class="btn btn-primary btn-full" onclick="upgradeToPro(); return false;">
-                                Upgrade for unlimited decisions
-                            </button>
+                    <!-- Pricing Block -->
+                    <div class="pricing-block">
+                        <div class="price-primary">
+                            <span class="price-amount-lg">$8</span>
+                            <span class="price-period-lg">/ month</span>
+                        </div>
+                        <div class="price-secondary">
+                            <span class="price-annual">$80 / year</span>
+                            <span class="savings-pill">Save 17%</span>
                         </div>
                     </div>
 
-                    <!-- Pro Benefits -->
-                    <div class="pro-benefits-grid">
-                        <div class="benefit-item">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <!-- CTA Button -->
+                    <button class="btn btn-primary btn-full btn-upgrade" onclick="upgradeToPro(); return false;">
+                        Upgrade to unlimited decisions
+                    </button>
+
+                    <!-- Pro Benefits (Single Column) -->
+                    <ul class="pro-benefits-list">
+                        <li class="benefit-item-compact">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                                 <polyline points="20 6 9 17 4 12"></polyline>
                             </svg>
                             <span>Unlimited decisions</span>
-                        </div>
-                        <div class="benefit-item">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        </li>
+                        <li class="benefit-item-compact">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                                 <polyline points="20 6 9 17 4 12"></polyline>
                             </svg>
                             <span>Save and revisit recommendations</span>
-                        </div>
-                        <div class="benefit-item">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        </li>
+                        <li class="benefit-item-compact">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                                 <polyline points="20 6 9 17 4 12"></polyline>
                             </svg>
                             <span>What-if scenarios</span>
-                        </div>
-                        <div class="benefit-item">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        </li>
+                        <li class="benefit-item-compact">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                                 <polyline points="20 6 9 17 4 12"></polyline>
                             </svg>
                             <span>Outcome tracking over time</span>
-                        </div>
-                        <div class="benefit-item">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        </li>
+                        <li class="benefit-item-compact">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                                 <polyline points="20 6 9 17 4 12"></polyline>
                             </svg>
                             <span>Decision patterns & insights</span>
-                        </div>
-                    </div>
+                        </li>
+                    </ul>
 
-                    <p class="guarantee-text">7-day money-back guarantee</p>
+                    <p class="guarantee-text-subtle">7-day money-back guarantee</p>
                 </div>
 
                 <!-- Profile Card -->
