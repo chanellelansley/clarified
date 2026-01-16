@@ -3002,7 +3002,6 @@ async function generateDeepSummary() {
 
     // Populate Card 1: Decision & Options
     document.getElementById('summary-decision').textContent = deepDecisionState.reframedQuestion || deepDecisionState.decision;
-    document.getElementById('summary-category').textContent = capitalizeFirst(deepDecisionState.category || 'Other');
 
     // Format timeline to show user-friendly text instead of "urgent"
     const timelineMap = {
