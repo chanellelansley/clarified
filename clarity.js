@@ -9138,41 +9138,15 @@ function updateDNAProgress() {
     });
 }
 
-// Check if DNA is unlocked and show badge
+// Check if DNA is unlocked (kept for compatibility)
 async function checkDNAStatus() {
-    const currentUser = window.supabaseClient?.getCurrentUser();
-    if (!currentUser || !window.supabaseClient) return;
-
-    try {
-        const { data: decisions } = await window.supabaseClient.getSupabase()
-            .from('decisions')
-            .select('id')
-            .eq('user_id', currentUser.id);
-
-        const isUnlocked = decisions && decisions.length >= DNA_UNLOCK_THRESHOLD;
-        const trigger = document.getElementById('dna-trigger');
-        const badge = document.getElementById('dna-badge');
-
-        if (isUnlocked && trigger) {
-            trigger.classList.add('unlocked');
-            // Show badge if they haven't viewed it yet
-            const hasViewed = localStorage.getItem('dna_viewed');
-            if (!hasViewed && badge) {
-                badge.classList.add('active');
-            }
-        }
-    } catch (error) {
-        console.error('[DNA] Error checking status:', error);
-    }
+    // No longer needed since we show forming state on profile page
+    // Kept for any external calls
 }
 
 // Mark as viewed when they complete the story
 function markDNAViewed() {
     localStorage.setItem('dna_viewed', 'true');
-    const badge = document.getElementById('dna-badge');
-    if (badge) {
-        badge.classList.remove('active');
-    }
 }
 
 // Download card as image (basic implementation)
@@ -9182,40 +9156,18 @@ function downloadDNACard() {
 }
 
 // ============================================
-// DNA ICON CLICK HANDLER & STATIC PAGE
+// DNA NAV CLICK HANDLER & STATIC PAGE
 // ============================================
 
-function handleDNAIconClick() {
+function handleDNANavClick() {
     const currentUser = window.supabaseClient?.getCurrentUser();
     if (!currentUser) {
-        showToast('Sign in to see your Decision DNA');
-        setTimeout(() => showPage('login'), 1000);
+        showPage('login');
         return;
     }
 
-    // Get decision count from current decisions or fetch
-    window.supabaseClient.getSupabase()
-        .from('decisions')
-        .select('id')
-        .eq('user_id', currentUser.id)
-        .then(({ data: decisions }) => {
-            const decisionCount = decisions?.length || 0;
-            const hasViewed = localStorage.getItem('dna_viewed');
-
-            if (decisionCount < DNA_UNLOCK_THRESHOLD) {
-                const remaining = DNA_UNLOCK_THRESHOLD - decisionCount;
-                showToast(`Make ${remaining} more decision${remaining > 1 ? 's' : ''} to see your DNA`);
-                return;
-            }
-
-            if (!hasViewed) {
-                // First time — open story
-                window.openDNAStory();
-            } else {
-                // Return visit — open static page
-                openDNAPage();
-            }
-        });
+    // Always go to the DNA profile page (it handles forming state internally)
+    openDNAPage();
 }
 
 async function openDNAPage() {
@@ -9257,9 +9209,6 @@ async function openDNAPage() {
 
     // Show full profile
     showDNAFullProfile(window.dnaData);
-
-    // Clear badge
-    document.getElementById('dna-badge')?.classList.remove('active');
 }
 
 function showDNAFormingState(decisionCount) {
