@@ -6058,6 +6058,13 @@ p, li {
     gap: var(--spacing-sm);
 }
 
+/* Pro Card Container - Centers the card */
+.pro-card-container {
+    display: flex;
+    justify-content: center;
+    padding: 0;
+}
+
 /* Upgrade Card - Redesigned */
 .upgrade-card-redesign {
     background: var(--white);
@@ -6065,7 +6072,7 @@ p, li {
     border-radius: var(--radius-lg);
     padding: var(--spacing-xl);
     max-width: 600px;
-    margin: 0 auto;
+    width: 100%;
 }
 
 .upgrade-heading {
@@ -6077,7 +6084,90 @@ p, li {
     margin: 0 0 var(--spacing-lg) 0;
 }
 
-/* Pricing Block */
+/* Account Page Billing Toggle */
+.account-billing-toggle {
+    display: flex;
+    background: var(--gray-100);
+    border-radius: 8px;
+    padding: 4px;
+    margin-bottom: var(--spacing-lg);
+}
+
+.account-billing-option {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 10px 16px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.account-billing-option:hover {
+    color: var(--text-primary);
+}
+
+.account-billing-option.active {
+    background: white;
+    color: var(--text-primary);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.toggle-savings {
+    font-size: 11px;
+    color: var(--sage-600);
+    font-weight: 600;
+}
+
+/* Pricing Display */
+.pricing-display {
+    text-align: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.price-main {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 4px;
+}
+
+.price-amount {
+    font-family: var(--font-heading);
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+.price-period {
+    font-size: var(--text-lg);
+    color: var(--text-secondary);
+    font-weight: 400;
+}
+
+.price-savings {
+    font-size: var(--text-sm);
+    color: var(--sage-600);
+    font-weight: 500;
+    margin-top: var(--spacing-xs);
+}
+
+/* Pro Card Divider */
+.pro-card-divider {
+    height: 1px;
+    background: var(--gray-100);
+    margin: var(--spacing-lg) 0 var(--spacing-md);
+}
+
+/* Legacy Pricing Block (kept for backwards compatibility) */
 .pricing-block {
     text-align: center;
     margin-bottom: var(--spacing-lg);
@@ -6131,7 +6221,7 @@ p, li {
 
 /* Upgrade CTA Button */
 .btn-upgrade {
-    margin-bottom: var(--spacing-lg);
+    margin-bottom: 0;
 }
 
 /* Pro Benefits List (Single Column) */
@@ -6139,8 +6229,6 @@ p, li {
     list-style: none;
     padding: 0;
     margin: 0;
-    border-top: 1px solid var(--gray-100);
-    padding-top: var(--spacing-md);
 }
 
 .benefit-item-compact {
@@ -10536,6 +10624,125 @@ p, li {
 }
 
 /* ============================================
+   PAYWALL MODAL - PROTECTION-ORIENTED
+   ============================================ */
+
+.paywall-modal {
+    max-width: 420px;
+}
+
+.paywall-header {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.paywall-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: #1F2937;
+    text-align: center;
+    margin: 0;
+}
+
+.paywall-body {
+    text-align: center;
+}
+
+.paywall-subhead {
+    font-size: 15px;
+    color: #6B7280;
+    line-height: 1.5;
+    margin: 8px 0 24px 0;
+}
+
+.paywall-card {
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 24px;
+    text-align: left;
+}
+
+.paywall-price-section {
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.paywall-price-primary {
+    font-size: 32px;
+    font-weight: 700;
+    color: #1F2937;
+}
+
+.paywall-price-period {
+    font-size: 16px;
+    font-weight: 400;
+    color: #6B7280;
+}
+
+.paywall-price-secondary {
+    font-size: 14px;
+    color: #9CA3AF;
+    margin-top: 4px;
+}
+
+.paywall-savings-note {
+    color: #418F6F;
+}
+
+.paywall-benefits {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 24px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.paywall-benefits li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 14px;
+    color: #374151;
+    line-height: 1.4;
+}
+
+.paywall-benefits li svg {
+    color: #418F6F;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.paywall-cta {
+    font-size: 16px;
+    padding: 14px 24px;
+}
+
+.paywall-dismiss {
+    background: none;
+    border: none;
+    color: #9CA3AF;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 16px;
+    margin-top: 8px;
+    transition: color 0.2s ease;
+}
+
+.paywall-dismiss:hover {
+    color: #6B7280;
+}
+
+.paywall-stripe-note {
+    font-size: 12px;
+    color: #9CA3AF;
+    margin-top: 16px;
+}
+
+/* ============================================
    FOUNDING MEMBER BADGE & BETA ACCESS
    ============================================ */
 
@@ -12775,6 +12982,138 @@ p, li {
 }
 
 /* ============================================
+   CLOSURE CARD & REVISIT ACCORDION
+   ============================================ */
+
+/* Decision Checkpoint / Closure Card */
+.closure-card {
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 24px;
+    margin-top: 24px;
+    text-align: center;
+}
+
+.closure-icon {
+    width: 48px;
+    height: 48px;
+    background: #F3F4F6;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+}
+
+.closure-icon svg {
+    color: #6B7280;
+}
+
+.closure-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #374151;
+    margin: 0 0 8px 0;
+}
+
+.closure-text {
+    font-size: 14px;
+    color: #6B7280;
+    line-height: 1.5;
+    margin: 0;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Revisit Conditions Accordion */
+.revisit-accordion {
+    margin-top: 16px;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    background: white;
+    overflow: hidden;
+}
+
+.revisit-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: #6B7280;
+    list-style: none;
+    transition: background 0.2s ease;
+}
+
+.revisit-summary::-webkit-details-marker {
+    display: none;
+}
+
+.revisit-summary:hover {
+    background: #F9FAFB;
+}
+
+.revisit-summary .optional-tag {
+    color: #9CA3AF;
+    font-weight: 400;
+}
+
+.revisit-summary .chevron-icon {
+    transition: transform 0.2s ease;
+    color: #9CA3AF;
+}
+
+.revisit-accordion[open] .chevron-icon {
+    transform: rotate(180deg);
+}
+
+.revisit-content {
+    padding: 0 20px 20px;
+}
+
+.revisit-helper {
+    font-size: 13px;
+    color: #9CA3AF;
+    margin-bottom: 12px;
+    font-style: italic;
+}
+
+.revisit-textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: none;
+    background: #F9FAFB;
+}
+
+.revisit-textarea:focus {
+    outline: none;
+    border-color: #418F6F;
+    background: white;
+}
+
+.revisit-textarea::placeholder {
+    color: #9CA3AF;
+}
+
+/* Tab-specific CTAs */
+.tab-ctas {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-top: 32px;
+    padding-bottom: 24px;
+}
+
+/* ============================================
    INTERSTITIAL PAGE
    ============================================ */
 
@@ -14142,6 +14481,187 @@ textarea:focus,
     font-size: 14px;
     line-height: 1.6;
     color: #374151;
+}
+
+/* Tab framing text */
+.tab-framing-text {
+    font-size: 14px;
+    color: #6B7280;
+    margin: 0 0 20px 0;
+    line-height: 1.5;
+    text-align: center;
+}
+
+/* Column labels */
+.column-label {
+    display: block;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.column-label.recommended-label {
+    color: #418F6F;
+}
+
+.column-label.alternative-label {
+    color: #9CA3AF;
+}
+
+.compare-option-header .option-name {
+    display: block;
+    font-size: 15px;
+}
+
+/* Alternative column de-emphasis */
+.compare-option-header.alternative {
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    color: #6B7280;
+    opacity: 0.8;
+}
+
+.compare-score-cell.alternative-cell {
+    opacity: 0.6;
+}
+
+.compare-score-cell.alternative-cell .dots {
+    color: #9CA3AF;
+}
+
+.compare-score-cell.alternative-cell .overall-score {
+    color: #9CA3AF;
+}
+
+/* Decision CTAs at bottom of recommendation page */
+.decision-ctas {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.btn-text-secondary {
+    background: none;
+    border: none;
+    color: #9CA3AF;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 8px 16px;
+    transition: color 0.2s ease;
+}
+
+.btn-text-secondary:hover {
+    color: #6B7280;
+}
+
+/* Toast notification */
+.toast-notification {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #374151;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 10000;
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+}
+
+.toast-notification.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* ============================================
+   FEEDBACK ESCAPE HATCH
+   ============================================ */
+
+/* Feedback link at bottom of recommendation page */
+.feedback-escape-hatch {
+    text-align: center;
+    margin-top: 32px;
+    padding-bottom: 24px;
+}
+
+.feedback-link {
+    font-size: 13px;
+    color: #9CA3AF;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.feedback-link:hover {
+    color: #6B7280;
+}
+
+/* Feedback link in decision detail modal */
+.detail-feedback-link {
+    text-align: center;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid #F3F4F6;
+}
+
+/* Feedback modal */
+.feedback-modal-content {
+    max-width: 400px;
+    padding: 28px;
+}
+
+.feedback-modal-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1F2937;
+    margin: 0 0 8px 0;
+    text-align: center;
+}
+
+.feedback-modal-prompt {
+    font-size: 14px;
+    color: #6B7280;
+    margin: 0 0 16px 0;
+    text-align: center;
+}
+
+.feedback-modal-textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: none;
+    background: #F9FAFB;
+    margin-bottom: 16px;
+}
+
+.feedback-modal-textarea:focus {
+    outline: none;
+    border-color: #418F6F;
+    background: white;
+}
+
+.feedback-modal-textarea::placeholder {
+    color: #9CA3AF;
+}
+
+.feedback-modal-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.feedback-modal-actions .btn-primary {
+    width: 100%;
 }
 
 /* ============================================

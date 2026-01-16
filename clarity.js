@@ -4614,8 +4614,8 @@ Rate each option (1-5) for each value. Show realistic differentiation.`;
 
         deepDecisionState.options.forEach((opt, idx) => {
             const isRecommended = opt === deepDecisionState.recommendation;
-            const badge = isRecommended ? '<br><span class="recommended-badge">Recommended</span>' : '';
-            tableHTML += `<div class="compare-option-header${isRecommended ? ' recommended' : ''}">${opt}${badge}</div>`;
+            const label = isRecommended ? '<span class="column-label recommended-label">Recommended</span>' : '<span class="column-label alternative-label">Alternative</span>';
+            tableHTML += `<div class="compare-option-header${isRecommended ? ' recommended' : ' alternative'}">${label}<span class="option-name">${opt}</span></div>`;
         });
 
         tableHTML += '</div>';
@@ -4659,12 +4659,14 @@ Rate each option (1-5) for each value. Show realistic differentiation.`;
             const valueRatings = ratings[value] || deepDecisionState.options.map(() => 3);
 
             valueRatings.forEach((rating, idx) => {
+                const opt = deepDecisionState.options[idx];
+                const isRecommended = opt === deepDecisionState.recommendation;
                 const percentage = Math.round((rating / 5) * 100);
                 const filledDots = Math.round(rating);
                 const emptyDots = 5 - filledDots;
                 const dots = '●'.repeat(filledDots) + '○'.repeat(emptyDots);
 
-                tableHTML += `<div class="compare-score-cell">
+                tableHTML += `<div class="compare-score-cell${isRecommended ? '' : ' alternative-cell'}">
                     <div class="compare-score">
                         <span class="dots">${dots}</span>
                         <span class="percentage">${percentage}%</span>
@@ -4679,8 +4681,10 @@ Rate each option (1-5) for each value. Show realistic differentiation.`;
         tableHTML += '<div class="compare-table-row overall-row">';
         tableHTML += '<div class="compare-row-label"><strong>Overall fit</strong></div>';
         overallScores.forEach((score, idx) => {
+            const opt = deepDecisionState.options[idx];
+            const isRecommended = opt === deepDecisionState.recommendation;
             const isWinner = idx === winnerIndex && !isCloseCall;
-            tableHTML += `<div class="compare-score-cell${isWinner ? ' winner-cell' : ''}">
+            tableHTML += `<div class="compare-score-cell${isWinner ? ' winner-cell' : ''}${isRecommended ? '' : ' alternative-cell'}">
                 <div class="overall-score">${score}%</div>
             </div>`;
         });
@@ -5101,13 +5105,13 @@ function showLifeDecisionPaywall() {
     openUpgradeModal();
 }
 
-// Track selected billing period (default to annual)
-let selectedBillingPeriod = 'annual';
+// Track selected billing period (default to monthly - matches paywall display)
+let selectedBillingPeriod = 'monthly';
 
 function selectBillingPeriod(period) {
     selectedBillingPeriod = period;
 
-    // Update toggle button states
+    // Update toggle button states (paywall modal)
     const buttons = document.querySelectorAll('.billing-option');
     buttons.forEach(btn => {
         btn.classList.remove('active');
@@ -5116,7 +5120,7 @@ function selectBillingPeriod(period) {
         }
     });
 
-    // Update price display
+    // Update price display (paywall modal - legacy)
     const priceDisplay = document.getElementById('pro-price-display');
     const savingsDisplay = document.getElementById('pro-savings-display');
 
@@ -5132,16 +5136,48 @@ function selectBillingPeriod(period) {
     }
 }
 
+// Account page billing toggle
+function selectAccountBillingPeriod(period) {
+    selectedBillingPeriod = period;
+
+    // Update toggle button states
+    const buttons = document.querySelectorAll('.account-billing-option');
+    buttons.forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.billing === period) {
+            btn.classList.add('active');
+        }
+    });
+
+    // Update price display
+    const priceDisplay = document.getElementById('account-price-display');
+    const savingsDisplay = document.getElementById('account-savings-display');
+
+    if (period === 'annual') {
+        if (priceDisplay) {
+            priceDisplay.innerHTML = '<span class="price-amount">$80</span><span class="price-period">/ year</span>';
+        }
+        if (savingsDisplay) {
+            savingsDisplay.style.display = 'block';
+        }
+    } else {
+        if (priceDisplay) {
+            priceDisplay.innerHTML = '<span class="price-amount">$8</span><span class="price-period">/ month</span>';
+        }
+        if (savingsDisplay) {
+            savingsDisplay.style.display = 'none';
+        }
+    }
+}
+
 function openUpgradeModal() {
     const modal = document.getElementById('upgrade-modal');
     if (modal) {
         modal.classList.add('active');
         document.body.style.overflow = 'hidden';
 
-        // Default to Annual after user has completed their free decision
-        const freeLifeDecisionUsed = localStorage.getItem('free_life_decision_used') === 'true';
-        const defaultPeriod = freeLifeDecisionUsed ? 'annual' : 'annual';
-        selectBillingPeriod(defaultPeriod);
+        // Default to monthly (matches the paywall display showing $8/month primary)
+        selectBillingPeriod('monthly');
     }
 }
 
@@ -5555,11 +5591,11 @@ function renderDNACard(decisions) {
     }
 
     // State A: Not enough decisions — show nothing (empty state handles zero decisions)
-    // Only show subtle hint when user has made 1+ decisions but not yet reached threshold
-    if (decisionCount > 0) {
+    // Only show subtle hint when user has made 2+ decisions but not yet reached threshold
+    if (decisionCount >= 2) {
         container.innerHTML = `
             <div class="dna-locked-card dna-hint-card">
-                <p class="dna-hint-text">Your Decision Profile unlocks after ${DNA_UNLOCK_THRESHOLD} decisions</p>
+                <p class="dna-hint-text">Your Decision Profile becomes available after ${DNA_UNLOCK_THRESHOLD} decisions</p>
             </div>
         `;
     } else {
@@ -5969,6 +6005,10 @@ function showDecisionDetailModal(decision) {
                         <button class="feeling-btn" data-feeling="regret">😔 Would do differently</button>
                     </div>
                 </div>
+
+                <div class="detail-feedback-link">
+                    <a href="#" class="feedback-link" id="detail-feedback-link">Something feel off?</a>
+                </div>
             </div>
         `;
         document.body.appendChild(modal);
@@ -6009,6 +6049,15 @@ function showDecisionDetailModal(decision) {
         // Add click handler to update feeling
         btn.onclick = () => updateDecisionFeeling(decision.id, btn.dataset.feeling);
     });
+
+    // Add feedback link handler
+    const feedbackLink = document.getElementById('detail-feedback-link');
+    if (feedbackLink) {
+        feedbackLink.onclick = (e) => {
+            e.preventDefault();
+            openFeedbackModal('saved_decision_detail', decision.id);
+        };
+    }
 
     // Show modal
     modal.classList.add('active');
@@ -7648,6 +7697,165 @@ async function startAnotherDecision() {
     }
 }
 
+// Save current decision and confirm closure
+async function saveCurrentDecision() {
+    console.log('[DECISION] Confirming decision closure');
+
+    // Check if guest user - prompt to create account to save
+    if (isGuestMode || appState.isGuest) {
+        // Show the save prompt (already exists in the UI)
+        const savePrompt = document.getElementById('guest-save-prompt');
+        if (savePrompt) {
+            savePrompt.style.display = 'block';
+        }
+        return;
+    }
+
+    // For signed-in users, show confirmation and navigate to decisions page
+    // The decision was already auto-saved when analysis completed
+    if (deepDecisionState.savedDecisionId) {
+        console.log('[DECISION] Decision already saved, showing confirmation');
+
+        // Show a brief toast/confirmation
+        showToast('Decision saved to your history');
+
+        // Navigate to decisions page after a short delay
+        setTimeout(() => {
+            showPage('decisions');
+        }, 1500);
+    } else {
+        // Decision wasn't saved yet (unusual case) - try to save now
+        console.log('[DECISION] Attempting to save decision now');
+        showToast('Saving your decision...');
+
+        // Navigate to decisions page
+        setTimeout(() => {
+            showPage('decisions');
+        }, 1000);
+    }
+}
+
+// Simple toast notification
+function showToast(message) {
+    // Create toast element if it doesn't exist
+    let toast = document.getElementById('toast-notification');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toast-notification';
+        toast.className = 'toast-notification';
+        document.body.appendChild(toast);
+    }
+
+    toast.textContent = message;
+    toast.classList.add('show');
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 2500);
+}
+
+// ============================================
+// FEEDBACK ESCAPE HATCH
+// ============================================
+
+// Track feedback context
+let feedbackContext = {
+    pageContext: null,
+    decisionId: null
+};
+
+function openFeedbackModal(pageContext, decisionId = null) {
+    console.log('[Feedback] Opening modal:', { pageContext, decisionId });
+
+    // Store context for submission
+    feedbackContext.pageContext = pageContext;
+    feedbackContext.decisionId = decisionId || deepDecisionState?.savedDecisionId || null;
+
+    // Clear textarea
+    const textarea = document.getElementById('feedback-textarea');
+    if (textarea) {
+        textarea.value = '';
+    }
+
+    // Show modal
+    const modal = document.getElementById('feedback-modal');
+    if (modal) {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeFeedbackModal() {
+    const modal = document.getElementById('feedback-modal');
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+async function submitFeedback() {
+    const textarea = document.getElementById('feedback-textarea');
+    const feedbackText = textarea?.value?.trim();
+
+    if (!feedbackText) {
+        showToast('Please share what felt off');
+        return;
+    }
+
+    console.log('[Feedback] Submitting:', {
+        text: feedbackText,
+        context: feedbackContext
+    });
+
+    try {
+        // Get current user (may be null for anonymous)
+        const currentUser = window.supabaseClient?.getCurrentUser();
+        const userId = currentUser?.id || null;
+
+        // Prepare feedback data
+        const feedbackData = {
+            user_id: userId,
+            decision_id: feedbackContext.decisionId,
+            page_context: feedbackContext.pageContext,
+            feedback_text: feedbackText,
+            created_at: new Date().toISOString()
+        };
+
+        // Save to Supabase
+        if (window.supabaseClient?.getSupabase()) {
+            const { error } = await window.supabaseClient.getSupabase()
+                .from('feedback')
+                .insert([feedbackData]);
+
+            if (error) {
+                console.error('[Feedback] Supabase error:', error);
+                // Don't show error to user - fail gracefully
+            } else {
+                console.log('[Feedback] Saved to Supabase');
+            }
+        } else {
+            // Fallback: store in localStorage if Supabase not available
+            const storedFeedback = JSON.parse(localStorage.getItem('clarified_feedback') || '[]');
+            storedFeedback.push(feedbackData);
+            localStorage.setItem('clarified_feedback', JSON.stringify(storedFeedback));
+            console.log('[Feedback] Saved to localStorage');
+        }
+
+        // Close modal and show confirmation
+        closeFeedbackModal();
+        showToast('Thank you. This helps us protect clarity.');
+
+        // Reset context
+        feedbackContext = { pageContext: null, decisionId: null };
+
+    } catch (error) {
+        console.error('[Feedback] Error:', error);
+        // Still close modal and thank user
+        closeFeedbackModal();
+        showToast('Thank you for your feedback.');
+    }
+}
+
 // Show paywall with "another decision" context
 function showAnotherDecisionPaywall() {
     console.log('[PAYWALL] Showing paywall for another decision');
@@ -7657,15 +7865,15 @@ function showAnotherDecisionPaywall() {
         trackEvent('paywall_shown_another_decision');
     }
 
-    // Update paywall copy for this context
+    // Update paywall copy for this context (protection-oriented)
     const titleEl = document.getElementById('upgrade-modal-title');
     const messageEl = document.getElementById('upgrade-modal-message');
 
     if (titleEl) {
-        titleEl.textContent = 'Upgrade for unlimited decisions';
+        titleEl.textContent = 'Protect your future clarity.';
     }
     if (messageEl) {
-        messageEl.textContent = 'Pro gives you unlimited decisions, saved history, and decision insights.';
+        messageEl.textContent = 'When the next big decision comes, you\'ll have a place to work through it — and a record of how you\'ve decided before.';
     }
 
     openUpgradeModal();
@@ -7825,21 +8033,21 @@ const SIGNUP_PROMPTS = {
             <path d="M12 16v-4"></path>
             <path d="M12 8h.01"></path>
         </svg>`,
-        title: 'Unlock Deep Guidance',
-        message: 'Create a free account to access our full decision framework — every account gets 1 free Deep Guidance session.'
+        title: 'Save your clarity',
+        message: 'Create a free account to save this decision — every account gets 1 meaningful decision free.'
     },
     limit: {
         icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
         </svg>`,
-        title: "You've used your 2 free decisions",
-        message: 'Sign up to keep going — it\'s free, and you\'ll be able to save your decisions and track patterns over time.'
+        title: "You've used your free decision",
+        message: 'Sign up to save your decisions and track patterns over time.'
     },
     upgrade: {
         icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
         </svg>`,
-        title: 'Create an account to upgrade',
+        title: 'Create an account to continue',
         message: 'Sign up first, then you can upgrade to Pro for unlimited decisions.'
     }
 };
@@ -8732,7 +8940,7 @@ async function openDNAStory() {
     // Check if user is logged in
     const currentUser = window.supabaseClient?.getCurrentUser();
     if (!currentUser) {
-        showToast('Sign in to unlock your Decision DNA');
+        showToast('Sign in to see your Decision DNA');
         setTimeout(() => {
             showPage('login');
         }, 1000);
@@ -8747,7 +8955,7 @@ async function openDNAStory() {
 
     if (!decisions || decisions.length < DNA_UNLOCK_THRESHOLD) {
         const remaining = DNA_UNLOCK_THRESHOLD - (decisions?.length || 0);
-        showToast(`Make ${remaining} more decision${remaining > 1 ? 's' : ''} to unlock your DNA`);
+        showToast(`Make ${remaining} more decision${remaining > 1 ? 's' : ''} to see your DNA`);
         return;
     }
 
@@ -8954,7 +9162,7 @@ function downloadDNACard() {
 function handleDNAIconClick() {
     const currentUser = window.supabaseClient?.getCurrentUser();
     if (!currentUser) {
-        showToast('Sign in to unlock your Decision DNA');
+        showToast('Sign in to see your Decision DNA');
         setTimeout(() => showPage('login'), 1000);
         return;
     }
@@ -8970,7 +9178,7 @@ function handleDNAIconClick() {
 
             if (decisionCount < DNA_UNLOCK_THRESHOLD) {
                 const remaining = DNA_UNLOCK_THRESHOLD - decisionCount;
-                showToast(`Make ${remaining} more decision${remaining > 1 ? 's' : ''} to unlock`);
+                showToast(`Make ${remaining} more decision${remaining > 1 ? 's' : ''} to see your DNA`);
                 return;
             }
 

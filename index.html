@@ -733,7 +733,7 @@
                     <div class="patterns-list" id="dna-page-patterns">
                         <!-- Populated by JS -->
                     </div>
-                    <p class="patterns-note">More insights unlock as you make more decisions</p>
+                    <p class="patterns-note">More insights become available as you make more decisions</p>
                 </div>
 
             </div>
@@ -777,61 +777,72 @@
                 </div>
 
                 <!-- Upgrade to Pro Card -->
-                <div class="card upgrade-card-redesign" id="upgrade-card" style="display: none;">
-                    <h3 class="upgrade-heading">Upgrade to Clarified Pro</h3>
+                <div class="pro-card-container" id="upgrade-card" style="display: none;">
+                    <div class="card upgrade-card-redesign">
+                        <h3 class="upgrade-heading">Clarified Pro</h3>
 
-                    <!-- Pricing Block -->
-                    <div class="pricing-block">
-                        <div class="price-primary">
-                            <span class="price-amount-lg">$8</span>
-                            <span class="price-period-lg">/ month</span>
+                        <!-- Billing Toggle -->
+                        <div class="account-billing-toggle">
+                            <button class="account-billing-option active" data-billing="monthly" onclick="selectAccountBillingPeriod('monthly')">Monthly</button>
+                            <button class="account-billing-option" data-billing="annual" onclick="selectAccountBillingPeriod('annual')">
+                                Annual
+                                <span class="toggle-savings">2 months free</span>
+                            </button>
                         </div>
-                        <div class="price-secondary">
-                            <span class="price-annual">$80 / year</span>
-                            <span class="savings-pill">Save 17%</span>
+
+                        <!-- Pricing Display -->
+                        <div class="pricing-display">
+                            <div class="price-main" id="account-price-display">
+                                <span class="price-amount">$8</span>
+                                <span class="price-period">/ month</span>
+                            </div>
+                            <div class="price-savings" id="account-savings-display" style="display: none;">
+                                2 months free
+                            </div>
                         </div>
+
+                        <!-- CTA Button -->
+                        <button class="btn btn-primary btn-full btn-upgrade" onclick="upgradeToPro(); return false;">
+                            Upgrade to unlimited decisions
+                        </button>
+
+                        <!-- Divider -->
+                        <div class="pro-card-divider"></div>
+
+                        <!-- Pro Benefits (Single Column) -->
+                        <ul class="pro-benefits-list">
+                            <li class="benefit-item-compact">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                                <span>Unlimited decisions</span>
+                            </li>
+                            <li class="benefit-item-compact">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                                <span>Save and revisit recommendations</span>
+                            </li>
+                            <li class="benefit-item-compact">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                                <span>What-if scenarios</span>
+                            </li>
+                            <li class="benefit-item-compact">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                                <span>Outcome tracking over time</span>
+                            </li>
+                            <li class="benefit-item-compact">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                                <span>Decision patterns & insights</span>
+                            </li>
+                        </ul>
                     </div>
-
-                    <!-- CTA Button -->
-                    <button class="btn btn-primary btn-full btn-upgrade" onclick="upgradeToPro(); return false;">
-                        Upgrade to unlimited decisions
-                    </button>
-
-                    <!-- Pro Benefits (Single Column) -->
-                    <ul class="pro-benefits-list">
-                        <li class="benefit-item-compact">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                <polyline points="20 6 9 17 4 12"></polyline>
-                            </svg>
-                            <span>Unlimited decisions</span>
-                        </li>
-                        <li class="benefit-item-compact">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                <polyline points="20 6 9 17 4 12"></polyline>
-                            </svg>
-                            <span>Save and revisit recommendations</span>
-                        </li>
-                        <li class="benefit-item-compact">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                <polyline points="20 6 9 17 4 12"></polyline>
-                            </svg>
-                            <span>What-if scenarios</span>
-                        </li>
-                        <li class="benefit-item-compact">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                <polyline points="20 6 9 17 4 12"></polyline>
-                            </svg>
-                            <span>Outcome tracking over time</span>
-                        </li>
-                        <li class="benefit-item-compact">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                <polyline points="20 6 9 17 4 12"></polyline>
-                            </svg>
-                            <span>Decision patterns & insights</span>
-                        </li>
-                    </ul>
-
-                    <p class="guarantee-text-subtle">7-day money-back guarantee</p>
                 </div>
 
                 <!-- Profile Card -->
@@ -1854,7 +1865,7 @@
                 <!-- TABS (3 ONLY) -->
                 <div class="tabs mb-lg">
                     <button class="tab active" data-tab="why-wins">Why this wins</button>
-                    <button class="tab" data-tab="compare">Compare options</button>
+                    <button class="tab" data-tab="compare">Why this fits your priorities</button>
                     <button class="tab" data-tab="tradeoffs">Tradeoffs & risks</button>
                 </div>
 
@@ -1967,8 +1978,9 @@
                     </div>
                 </div>
 
-                <!-- Compare Options Tab -->
+                <!-- Why This Fits Your Priorities Tab -->
                 <div class="tab-content" id="tab-compare">
+                    <p class="tab-framing-text">This explains why the recommendation fits what you said matters — not an invitation to rebalance or rethink it.</p>
                     <!-- Dot Table Comparison -->
                     <div class="loading-state" id="compare-loading">
                         <div class="spinner"></div>
@@ -1978,7 +1990,7 @@
                         <div class="compare-table-wrapper" id="compare-table-wrapper">
                             <!-- Populated dynamically -->
                         </div>
-                        <p class="compare-footnote">Scores reflect how each option maps to your stated priorities</p>
+                        <p class="compare-footnote">Based on how you ranked these priorities earlier</p>
                     </div>
                 </div>
 
@@ -2042,27 +2054,48 @@
                             </ul>
                         </div>
 
-                        <!-- Reflection Prompt (Collapsible, optional) -->
-                        <details class="reflection-collapsible">
-                            <summary class="reflection-summary">
-                                <span>What would need to change for this to feel different?</span>
-                                <svg class="chevron-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="6 9 12 15 18 9"></polyline>
-                                </svg>
-                            </summary>
-                            <div class="reflection-content">
-                                <p class="reflection-prompt-subtitle">Sometimes just naming it is enough to move forward.</p>
-                                <textarea id="reflection-prompt-input" class="reflection-prompt-textarea" placeholder="If I knew that... or If I felt sure about..." rows="3"></textarea>
-                            </div>
-                        </details>
                     </div>
-                </div>
 
-                <!-- Bottom CTA -->
-                <div class="button-group mt-xl" style="display: flex; justify-content: center;">
-                    <button class="btn btn-primary" onclick="startAnotherDecision(); return false;">
-                        Make another decision
-                    </button>
+                    <!-- Decision Checkpoint Card -->
+                    <div class="closure-card">
+                        <div class="closure-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                        </div>
+                        <h4 class="closure-title">Decision checkpoint</h4>
+                        <p class="closure-text">This is a reasonable choice based on what you said matters. You can revisit only if something materially changes.</p>
+                    </div>
+
+                    <!-- Revisit Conditions Accordion (optional, collapsed by default) -->
+                    <details class="revisit-accordion">
+                        <summary class="revisit-summary">
+                            <span>When would you revisit this decision? <span class="optional-tag">(optional)</span></span>
+                            <svg class="chevron-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </summary>
+                        <div class="revisit-content">
+                            <p class="revisit-helper">Not to rethink it — just to name what would actually need to be different.</p>
+                            <textarea id="revisit-conditions-input" class="revisit-textarea" placeholder="I'd revisit this if…" rows="3"></textarea>
+                        </div>
+                    </details>
+
+                    <!-- Tab-specific CTAs -->
+                    <div class="tab-ctas">
+                        <button class="btn btn-primary" onclick="saveCurrentDecision(); return false;">
+                            Save this decision
+                        </button>
+                        <button class="btn-text-secondary" onclick="startAnotherDecision(); return false;">
+                            Make another decision
+                        </button>
+                    </div>
+
+                    <!-- Feedback escape hatch -->
+                    <div class="feedback-escape-hatch">
+                        <a href="#" class="feedback-link" onclick="openFeedbackModal('recommendation_final'); return false;">Something feel off?</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -2098,76 +2131,85 @@
     <!-- Upgrade Modal / Life Decision Paywall -->
     <div class="modal" id="upgrade-modal">
         <div class="modal-overlay" onclick="closeUpgradeModal()"></div>
-        <div class="modal-content modal-content-md">
-            <div class="modal-header">
-                <h3 class="modal-title" id="upgrade-modal-title">Decide with confidence — revisit with clarity.</h3>
+        <div class="modal-content modal-content-md paywall-modal">
+            <div class="modal-header paywall-header">
+                <h3 class="modal-title paywall-title" id="upgrade-modal-title">Keep this decision clear.</h3>
                 <button class="modal-close" onclick="closeUpgradeModal()">&times;</button>
             </div>
-            <div class="modal-body">
-                <p class="modal-subtitle" id="upgrade-modal-message">Save your decisions, revisit them when you need to, and work through new ones with the same thoughtful structure.</p>
+            <div class="modal-body paywall-body">
+                <p class="paywall-subhead" id="upgrade-modal-message">You just worked through something important. Saving it means you won't have to start over if doubt creeps back in.</p>
 
-                <!-- Billing Toggle -->
-                <div class="billing-toggle" id="billing-toggle">
-                    <button class="billing-option" data-billing="monthly" onclick="selectBillingPeriod('monthly')">Monthly</button>
-                    <button class="billing-option active" data-billing="annual" onclick="selectBillingPeriod('annual')">Annual</button>
-                </div>
-
-                <!-- Upgrade Options -->
-                <div class="upgrade-options" id="upgrade-options">
-                    <!-- Pro Subscription Option -->
-                    <div class="upgrade-option-card" id="upgrade-option-pro">
-                        <div class="upgrade-option-header">
-                            <div>
-                                <h4 class="upgrade-option-title">Clarified Pro</h4>
-                                <div class="upgrade-option-price" id="pro-price-display">$80/year</div>
-                                <div class="upgrade-option-savings" id="pro-savings-display">2 months free</div>
-                            </div>
-                            <div class="upgrade-option-badge">Unlimited</div>
-                        </div>
-                        <ul class="upgrade-option-features">
-                            <li>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
-                                Unlimited decisions
-                            </li>
-                            <li>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
-                                Save and revisit recommendations
-                            </li>
-                            <li>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
-                                What-if scenarios
-                            </li>
-                            <li>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
-                                Outcome tracking over time
-                            </li>
-                            <li>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
-                                Decision patterns & insights
-                            </li>
-                        </ul>
-                        <button class="btn btn-primary btn-full" onclick="upgradeToPro(); return false;">
-                            Upgrade for unlimited decisions
-                        </button>
+                <!-- Pricing Card -->
+                <div class="paywall-card">
+                    <div class="paywall-price-section">
+                        <div class="paywall-price-primary">$8<span class="paywall-price-period">/month</span></div>
+                        <div class="paywall-price-secondary">or $80/year <span class="paywall-savings-note">(2 months free)</span></div>
                     </div>
+
+                    <ul class="paywall-benefits">
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            Save and revisit this recommendation later
+                        </li>
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            Remember why you decided this
+                        </li>
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            Track how the decision plays out over time
+                        </li>
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            See patterns in how you make choices
+                        </li>
+                    </ul>
+
+                    <button class="btn btn-primary btn-full paywall-cta" onclick="upgradeToPro(); return false;">
+                        Keep my clarity
+                    </button>
                 </div>
 
-                <p class="text-xs text-muted text-center" style="margin-top: 1rem;">
+                <button class="paywall-dismiss" onclick="closeUpgradeModal(); return false;">
+                    Don't save this decision
+                </button>
+
+                <p class="paywall-stripe-note">
                     Secure checkout powered by Stripe
                 </p>
             </div>
         </div>
     </div>
+
+<!-- ============================================
+     FEEDBACK MODAL
+     ============================================ -->
+<div class="modal" id="feedback-modal">
+    <div class="modal-overlay" onclick="closeFeedbackModal()"></div>
+    <div class="modal-content feedback-modal-content">
+        <button class="modal-close" onclick="closeFeedbackModal()">&times;</button>
+        <h3 class="feedback-modal-title">Thanks for telling us.</h3>
+        <p class="feedback-modal-prompt">What felt confusing, heavy, or unnecessary?</p>
+        <textarea
+            id="feedback-textarea"
+            class="feedback-modal-textarea"
+            placeholder="You can be brief — even one sentence helps."
+            rows="4"
+        ></textarea>
+        <div class="feedback-modal-actions">
+            <button class="btn btn-primary" onclick="submitFeedback(); return false;">Send</button>
+            <button class="btn-text-secondary" onclick="closeFeedbackModal(); return false;">Cancel</button>
+        </div>
+    </div>
+</div>
 
 <!-- ============================================
      GUEST ONBOARDING MODALS
