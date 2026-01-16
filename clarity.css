@@ -12406,6 +12406,47 @@ p, li {
 }
 
 /* ============================================
+   VALUES PAGE - Loading & Show More
+   ============================================ */
+
+.values-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 2rem;
+    color: var(--gray-500);
+    font-size: 0.875rem;
+}
+
+.show-more-values-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: var(--gray-50);
+    border: 1px dashed var(--gray-300);
+    border-radius: 12px;
+    color: var(--gray-600);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 0.5rem;
+}
+
+.show-more-values-btn:hover {
+    background: var(--gray-100);
+    border-color: var(--gray-400);
+    color: var(--gray-700);
+}
+
+.show-more-values-btn svg {
+    color: var(--sage-500);
+}
+
+/* ============================================
    SAFETY MODALS - Crisis, Warning, Disclaimer
    ============================================ */
 

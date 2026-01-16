@@ -2481,148 +2481,171 @@ const valueIcons = {
     'family': '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>',
     'climate': '<path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path>',
     'adventure': '<circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>',
-    'roots': '<path d="M12 2v20M3 12l9-9 9 9"></path>'
+    'roots': '<path d="M12 2v20M3 12l9-9 9 9"></path>',
+    // Additional values
+    'balance': '<path d="M12 2v20m-7-7h14"></path>',
+    'authenticity': '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>',
+    'purpose': '<circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>',
+    'recognition': '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>',
+    'creativity': '<path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>',
+    'legacy': '<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><path d="M3 9h18M9 21V9"></path>',
+    'peace': '<circle cx="12" cy="12" r="10"></circle><path d="M12 2v20M2 12h20"></path>',
+    'challenge': '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>',
+    'connection': '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>'
 };
 
-// Populate category-specific values
-async function populateCategoryValues() {
-    // Wait for category detection if it's still in progress
-    // Check every 100ms for up to 5 seconds
-    let attempts = 0;
-    while (!deepDecisionState.category && attempts < 50) {
-        await new Promise(resolve => setTimeout(resolve, 100));
-        attempts++;
-    }
+// All available values (comprehensive list)
+const ALL_VALUES = [
+    { value: 'growth', label: 'Growth & learning' },
+    { value: 'stability', label: 'Stability & security' },
+    { value: 'freedom', label: 'Freedom & flexibility' },
+    { value: 'impact', label: 'Making an impact' },
+    { value: 'relationships', label: 'Relationships' },
+    { value: 'money', label: 'Financial gain' },
+    { value: 'health', label: 'Health & wellbeing' },
+    { value: 'passion', label: 'Following my passion' },
+    { value: 'autonomy', label: 'Autonomy & control' },
+    { value: 'trust', label: 'Trust & honesty' },
+    { value: 'balance', label: 'Work-life balance' },
+    { value: 'adventure', label: 'Adventure & novelty' },
+    { value: 'community', label: 'Community & belonging' },
+    { value: 'family', label: 'Family & loved ones' },
+    { value: 'authenticity', label: 'Being true to myself' },
+    { value: 'security', label: 'Long-term security' },
+    { value: 'purpose', label: 'Sense of purpose' },
+    { value: 'recognition', label: 'Recognition & respect' },
+    { value: 'creativity', label: 'Creative expression' },
+    { value: 'simplicity', label: 'Simplicity & ease' },
+    { value: 'legacy', label: 'Building a legacy' },
+    { value: 'peace', label: 'Peace of mind' },
+    { value: 'challenge', label: 'Challenge & growth' },
+    { value: 'connection', label: 'Deep connection' }
+];
 
-    const category = deepDecisionState.category || 'other';
+// Populate values with AI-inferred prioritization
+async function populateCategoryValues() {
     const header = document.getElementById('deep-values-header');
     const container = document.getElementById('deep-values-chips');
 
     // Reset custom values count when repopulating
     customValuesCount = 0;
 
-    header.textContent = `Common priorities for ${category} decisions`;
-
-    const categoryValues = {
-        career: [
-            { value: 'growth', label: 'Growth & learning' },
-            { value: 'impact', label: 'Making an impact' },
-            { value: 'money', label: 'Compensation' },
-            { value: 'prestige', label: 'Prestige & recognition' },
-            { value: 'worklife', label: 'Work-life balance' },
-            { value: 'autonomy', label: 'Autonomy & ownership' },
-            { value: 'mission', label: 'Company mission' },
-            { value: 'team', label: 'Team & culture' }
-        ],
-        relationship: [
-            { value: 'trust', label: 'Trust & honesty' },
-            { value: 'compatibility', label: 'Compatibility' },
-            { value: 'growth', label: 'Personal growth' },
-            { value: 'communication', label: 'Communication' },
-            { value: 'values', label: 'Shared values' },
-            { value: 'intimacy', label: 'Emotional intimacy' },
-            { value: 'support', label: 'Mutual support' },
-            { value: 'future', label: 'Long-term potential' }
-        ],
-        finance: [
-            { value: 'returns', label: 'Financial returns' },
-            { value: 'security', label: 'Financial security' },
-            { value: 'risk', label: 'Risk tolerance' },
-            { value: 'liquidity', label: 'Liquidity' },
-            { value: 'timeline', label: 'Time horizon' },
-            { value: 'diversification', label: 'Diversification' },
-            { value: 'values', label: 'Aligned with values' },
-            { value: 'simplicity', label: 'Simplicity' }
-        ],
-        health: [
-            { value: 'effectiveness', label: 'Treatment effectiveness' },
-            { value: 'sideeffects', label: 'Minimal side effects' },
-            { value: 'quality', label: 'Quality of life' },
-            { value: 'longevity', label: 'Long-term health' },
-            { value: 'energy', label: 'Energy & vitality' },
-            { value: 'mental', label: 'Mental wellbeing' },
-            { value: 'sustainability', label: 'Sustainable habits' },
-            { value: 'support', label: 'Support system' }
-        ],
-        education: [
-            { value: 'learning', label: 'Quality of learning' },
-            { value: 'career', label: 'Career prospects' },
-            { value: 'cost', label: 'Cost & affordability' },
-            { value: 'reputation', label: 'Institution reputation' },
-            { value: 'network', label: 'Network & connections' },
-            { value: 'flexibility', label: 'Flexibility' },
-            { value: 'passion', label: 'Following passion' },
-            { value: 'practical', label: 'Practical skills' }
-        ],
-        lifestyle: [
-            { value: 'happiness', label: 'Daily happiness' },
-            { value: 'freedom', label: 'Freedom & flexibility' },
-            { value: 'adventure', label: 'Adventure & novelty' },
-            { value: 'stability', label: 'Stability' },
-            { value: 'community', label: 'Community' },
-            { value: 'authenticity', label: 'Authenticity' },
-            { value: 'sustainability', label: 'Sustainability' },
-            { value: 'balance', label: 'Balance' }
-        ],
-        relocation: [
-            { value: 'opportunity', label: 'Career opportunities' },
-            { value: 'lifestyle', label: 'Lifestyle & culture' },
-            { value: 'cost', label: 'Cost of living' },
-            { value: 'community', label: 'Community' },
-            { value: 'family', label: 'Family & relationships' },
-            { value: 'climate', label: 'Climate & environment' },
-            { value: 'adventure', label: 'Adventure & growth' },
-            { value: 'roots', label: 'Maintaining roots' }
-        ],
-        other: [
-            { value: 'growth', label: 'Growth & learning' },
-            { value: 'stability', label: 'Stability & security' },
-            { value: 'freedom', label: 'Freedom & flexibility' },
-            { value: 'impact', label: 'Making an impact' },
-            { value: 'relationships', label: 'Relationships' },
-            { value: 'money', label: 'Financial gain' },
-            { value: 'health', label: 'Health & wellbeing' },
-            { value: 'passion', label: 'Following my passion' }
-        ]
-    };
-
-    const values = categoryValues[category] || categoryValues.other;
+    // Update header - contextual based on inference
+    header.textContent = 'Based on your situation, these values seem most relevant';
 
     container.innerHTML = '';
 
-    // Add preset value pills with icons
-    values.forEach(item => {
-        const pill = document.createElement('button');
-        pill.className = 'value-pill';
-        pill.dataset.value = item.value;
+    // Show loading state
+    container.innerHTML = '<div class="values-loading"><div class="spinner-sm"></div><span>Personalizing values...</span></div>';
 
-        const icon = valueIcons[item.value] || valueIcons['growth']; // Fallback icon
+    // Get prioritized values based on context
+    let prioritizedValues;
+    try {
+        prioritizedValues = await inferPrioritizedValues();
+    } catch (error) {
+        console.error('[VALUES] Error inferring priorities:', error);
+        // Fallback to default order
+        prioritizedValues = ALL_VALUES.slice(0, 8).map(v => v.value);
+    }
 
-        pill.innerHTML = `
-            <svg class="value-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                ${icon}
-            </svg>
-            <span>${item.label}</span>
-            <div class="value-checkmark">
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-            </div>
-        `;
+    container.innerHTML = '';
 
-        pill.addEventListener('click', function() {
-            this.classList.toggle('selected');
-            updateValuesCounter();
-        });
+    // Separate into prioritized (shown) and other (behind "show more")
+    const prioritizedSet = new Set(prioritizedValues.slice(0, 8));
+    const shownValues = ALL_VALUES.filter(v => prioritizedSet.has(v.value));
+    const hiddenValues = ALL_VALUES.filter(v => !prioritizedSet.has(v.value));
 
-        container.appendChild(pill);
+    // Add prioritized values
+    shownValues.forEach(item => {
+        container.appendChild(createValuePill(item));
     });
+
+    // Add "Show more" button if there are hidden values
+    if (hiddenValues.length > 0) {
+        const showMoreBtn = document.createElement('button');
+        showMoreBtn.className = 'show-more-values-btn';
+        showMoreBtn.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="16"></line>
+                <line x1="8" y1="12" x2="16" y2="12"></line>
+            </svg>
+            <span>Show more values</span>
+        `;
+        showMoreBtn.addEventListener('click', function() {
+            // Remove the button
+            this.remove();
+            // Add hidden values
+            hiddenValues.forEach(item => {
+                container.insertBefore(createValuePill(item), container.querySelector('.add-custom-value-btn'));
+            });
+        });
+        container.appendChild(showMoreBtn);
+    }
 
     // Add the "+ Add your own" button
     addCustomValueButton(container);
 
     // Reset counter
     updateValuesCounter();
+}
+
+// Create a value pill element
+function createValuePill(item) {
+    const pill = document.createElement('button');
+    pill.className = 'value-pill';
+    pill.dataset.value = item.value;
+
+    const icon = valueIcons[item.value] || valueIcons['growth'];
+
+    pill.innerHTML = `
+        <svg class="value-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            ${icon}
+        </svg>
+        <span>${item.label}</span>
+        <div class="value-checkmark">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+        </div>
+    `;
+
+    pill.addEventListener('click', function() {
+        this.classList.toggle('selected');
+        updateValuesCounter();
+    });
+
+    return pill;
+}
+
+// Infer prioritized values based on decision context
+async function inferPrioritizedValues() {
+    const decision = deepDecisionState.decision || '';
+    const reframed = deepDecisionState.reframedQuestion || '';
+    const difficulties = deepDecisionState.difficulties || [];
+
+    const context = `
+Decision: ${decision}
+Reframed question: ${reframed}
+What's making it hard: ${difficulties.join(', ')}
+    `.trim();
+
+    const systemPrompt = `You analyze decisions and identify which values are most relevant.
+
+Given this decision context, return the 8 most relevant values from this list, in order of relevance:
+growth, stability, freedom, impact, relationships, money, health, passion, autonomy, trust, balance, adventure, community, family, authenticity, security, purpose, recognition, creativity, simplicity, legacy, peace, challenge, connection
+
+Return ONLY a comma-separated list of value names, nothing else. Example: growth, freedom, purpose, autonomy, impact, balance, authenticity, challenge`;
+
+    try {
+        const response = await callClaude(context, systemPrompt);
+        const values = response.trim().split(',').map(v => v.trim().toLowerCase());
+        console.log('[VALUES] Inferred priorities:', values);
+        return values;
+    } catch (error) {
+        console.error('[VALUES] Inference failed:', error);
+        throw error;
+    }
 }
 
 // Update the values counter
