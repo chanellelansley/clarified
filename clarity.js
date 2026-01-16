@@ -4032,84 +4032,74 @@ function populateConfidenceSection(scoreData) {
         confidencePreview.textContent = levelLabel;
     }
 
-    // Tipping points with improved calculation
+    // Decision stability analysis
     const tippingPoints = calculateTippingPoints(winnerName, margin);
-    const tippingCardsEl = document.getElementById('tipping-cards');
+    const stabilityCardsEl = document.getElementById('stability-cards');
 
-    if (tippingCardsEl) {
+    if (stabilityCardsEl) {
         let html = '';
 
-        // Warning icon SVG
-        const warningIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-        </svg>`;
-
-        // Safe icon SVG
-        const safeIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        // Locked in icon (checkmark)
+        const lockedIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>`;
 
-        // Group tipping points by type and new winner
-        const sensitive = tippingPoints.filter(t => t.wouldChange);
+        // Conditional icon (info circle - neutral)
+        const conditionalIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 16v-4"/>
+            <path d="M12 8h.01"/>
+        </svg>`;
+
+        // Group by stability
+        const conditional = tippingPoints.filter(t => t.wouldChange);
         const stable = tippingPoints.filter(t => !t.wouldChange);
 
-        // Group sensitive by which option they'd flip to
-        const sensitiveByNewWinner = {};
-        sensitive.forEach(t => {
-            if (!sensitiveByNewWinner[t.newWinner]) {
-                sensitiveByNewWinner[t.newWinner] = [];
-            }
-            sensitiveByNewWinner[t.newWinner].push(t);
-        });
-
-        // Render sensitive groups first (more important)
-        Object.entries(sensitiveByNewWinner).forEach(([newWinner, items]) => {
-            const values = items.map(i => formatValueLabel(i.value)).join(', ');
-            const isCombined = items.length > 1;
-
-            html += `
-                <div class="tipping-card warning ${isCombined ? 'combined' : ''}">
-                    <div class="tipping-header">
-                        <div class="tipping-icon warning">${warningIcon}</div>
-                        <span class="tipping-value">${values}</span>
-                        <span class="tipping-badge warning">Could flip</span>
-                    </div>
-                    <p class="tipping-result warning">If ${isCombined ? 'these mattered' : 'this mattered'} more to you, the answer would flip to ${newWinner}</p>
-                    ${!isCombined ? `
-                    <div class="tipping-scale">
-                        <div class="scale-track">
-                            <div class="scale-marker you" style="left: ${items[0].youPosition}%"></div>
-                            <div class="scale-marker change" style="left: ${items[0].changePosition}%"></div>
-                        </div>
-                        <div class="scale-labels">
-                            <span class="label-you">You now</span>
-                            <span class="label-change">Tipping point</span>
-                        </div>
-                    </div>
-                    ` : ''}
-                </div>
-            `;
-        });
-
-        // Render one combined stable group
+        // RENDER STABLE/LOCKED-IN FIRST (reassuring)
         if (stable.length > 0) {
             const values = stable.map(s => formatValueLabel(s.value)).join(', ');
             html += `
-                <div class="tipping-card safe combined">
-                    <div class="tipping-header">
-                        <div class="tipping-icon safe">${safeIcon}</div>
-                        <span class="tipping-value">${values}</span>
-                        <span class="tipping-badge safe">Locked in</span>
+                <div class="stability-card locked">
+                    <div class="stability-header">
+                        <div class="stability-icon locked">${lockedIcon}</div>
+                        <span class="stability-value">${values}</span>
+                        <span class="stability-badge locked">Locked in</span>
                     </div>
-                    <p class="tipping-result safe">No matter how you weight ${stable.length > 1 ? 'these' : 'this'}, ${winnerName} still wins</p>
+                    <p class="stability-explanation">No matter how ${stable.length > 1 ? 'these are' : 'this is'} weighted, ${winnerName} remains the better choice.</p>
                 </div>
             `;
         }
 
-        tippingCardsEl.innerHTML = html;
+        // RENDER CONDITIONAL SECOND (neutral, not alarming)
+        if (conditional.length > 0) {
+            // Group by what they'd flip to
+            const conditionalByNewWinner = {};
+            conditional.forEach(t => {
+                if (!conditionalByNewWinner[t.newWinner]) {
+                    conditionalByNewWinner[t.newWinner] = [];
+                }
+                conditionalByNewWinner[t.newWinner].push(t);
+            });
+
+            Object.entries(conditionalByNewWinner).forEach(([newWinner, items]) => {
+                const values = items.map(i => formatValueLabel(i.value)).join(', ');
+                html += `
+                    <div class="stability-card conditional">
+                        <div class="stability-header">
+                            <div class="stability-icon conditional">${conditionalIcon}</div>
+                            <span class="stability-value">${values}</span>
+                            <span class="stability-badge conditional">Would only change if...</span>
+                        </div>
+                        <p class="stability-explanation">Your preference would shift only if ${items.length > 1 ? 'these factors became' : 'this factor became'} significantly more important than ${items.length > 1 ? 'they are' : 'it is'} today. Currently, ${items.length > 1 ? "they're" : "this isn't"} not decisive.</p>
+                    </div>
+                `;
+            });
+        }
+
+        stabilityCardsEl.innerHTML = html;
     }
 
-    // Reflection questions - generate based on tipping points
+    // Reflection questions - generate based on stability analysis
     populateReflectionQuestions(tippingPoints, winnerName);
 }
 

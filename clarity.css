@@ -11405,7 +11405,118 @@ p, li {
 }
 
 /* ============================================
-   TIPPING POINTS - Warning/Safe Cards
+   DECISION STABILITY - Calm, Reassuring Cards
+   ============================================ */
+
+/* Section container */
+.stability-section {
+    margin-top: 24px;
+}
+
+.stability-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 6px 0;
+}
+
+.stability-framing {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    margin: 0 0 16px 0;
+    line-height: 1.4;
+}
+
+/* Stability cards */
+.stability-card {
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+}
+
+.stability-card:last-child {
+    margin-bottom: 0;
+}
+
+/* Locked in - calm green, reassuring */
+.stability-card.locked {
+    background: #F8FDF9;
+    border-color: #D1E7DD;
+}
+
+/* Conditional - neutral gray, not alarming */
+.stability-card.conditional {
+    background: #FAFAFA;
+    border-color: var(--gray-200);
+}
+
+.stability-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.stability-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.stability-icon.locked {
+    background: #D1E7DD;
+    color: #198754;
+}
+
+.stability-icon.conditional {
+    background: var(--gray-100);
+    color: var(--text-tertiary);
+}
+
+.stability-value {
+    font-size: 14px;
+    font-weight: 600;
+    flex: 1;
+    color: var(--text-primary);
+}
+
+.stability-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 10px;
+    white-space: nowrap;
+}
+
+.stability-badge.locked {
+    background: #D1E7DD;
+    color: #0F5132;
+}
+
+.stability-badge.conditional {
+    background: var(--gray-100);
+    color: var(--text-secondary);
+}
+
+.stability-explanation {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin: 0;
+}
+
+.stability-card.locked .stability-explanation {
+    color: #198754;
+}
+
+/* ============================================
+   LEGACY TIPPING POINTS (kept for backwards compatibility)
    ============================================ */
 .tipping-title {
     font-size: 14px;
@@ -11513,6 +11624,7 @@ p, li {
 .tipping-scale {
     position: relative;
     padding-bottom: 28px;
+    display: none; /* Hidden - sliders removed */
 }
 
 .scale-track {
