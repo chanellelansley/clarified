@@ -4116,29 +4116,71 @@ p, li {
 
 .feeling-options {
     display: flex;
-    gap: 8px;
+    gap: 12px;
     flex-wrap: wrap;
 }
 
 .feeling-btn {
-    padding: 10px 16px;
-    border: 1px solid #E5E7EB;
-    border-radius: 8px;
-    background: white;
-    font-size: 14px;
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 12px 16px;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    background: var(--white);
+    font-size: var(--text-sm);
     cursor: pointer;
     transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-align: center;
+}
+
+.feeling-btn-emoji {
+    font-size: 18px;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.feeling-btn-text {
+    white-space: nowrap;
 }
 
 .feeling-btn:hover {
-    border-color: #418F6F;
-    background: #F0F9F6;
+    border-color: var(--sage-green);
+    background: var(--sage-50);
 }
 
 .feeling-btn.active {
-    border-color: #418F6F;
-    background: #D1FAE5;
-    color: #065F46;
+    border-color: var(--sage-green);
+    border-width: 2px;
+    background: var(--sage-50);
+    color: var(--sage-green);
+    font-weight: 500;
+}
+
+/* Helper text for feeling section */
+.detail-feeling-helper {
+    font-size: var(--text-sm);
+    color: var(--gray-400);
+    margin-top: 4px;
+    margin-bottom: 16px;
+}
+
+/* Mobile: stack feeling buttons vertically */
+@media (max-width: 480px) {
+    .feeling-options {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .feeling-btn {
+        width: 100%;
+        flex: none;
+        justify-content: flex-start;
+        padding: 14px 16px;
+    }
 }
 
 /* Empty State */
@@ -15046,8 +15088,8 @@ textarea:focus,
     color: #374151;
 }
 
-/* Feeling options (Step 2) */
-.feeling-options {
+/* Feeling options (Step 2 - Record Outcome Modal) */
+.outcome-screen .feeling-options {
     display: flex;
     gap: 12px;
     margin-bottom: 24px;
@@ -15055,6 +15097,7 @@ textarea:focus,
 
 .feeling-option {
     flex: 1;
+    min-width: 0;
 }
 
 .feeling-option input {
@@ -15067,36 +15110,57 @@ textarea:focus,
     align-items: center;
     gap: 8px;
     padding: 20px 12px;
-    border: 2px solid #E5E7EB;
+    border: 2px solid var(--gray-200);
     border-radius: var(--radius-card);
     cursor: pointer;
     transition: all var(--transition-fast);
     text-align: center;
+    height: 100%;
 }
 
 .feeling-content:hover {
-    border-color: #D1D5DB;
-    background: #F9FAFB;
+    border-color: var(--sage-green);
+    background: var(--sage-50);
 }
 
 .feeling-option input:checked + .feeling-content {
-    border-color: #418F6F;
-    background: #F0F9F6;
+    border-color: var(--sage-green);
+    background: var(--sage-50);
 }
 
 .feeling-emoji {
-    font-size: 32px;
+    font-size: 28px;
+    line-height: 1;
 }
 
 .feeling-label {
     font-weight: 600;
-    font-size: 15px;
-    color: #374151;
+    font-size: 14px;
+    color: var(--gray-700);
 }
 
 .feeling-desc {
     font-size: 12px;
-    color: #6B7280;
+    color: var(--gray-500);
+}
+
+/* Mobile: stack feeling options vertically */
+@media (max-width: 480px) {
+    .outcome-screen .feeling-options {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .feeling-content {
+        flex-direction: row;
+        justify-content: flex-start;
+        padding: 16px;
+        gap: 12px;
+    }
+
+    .feeling-emoji {
+        font-size: 24px;
+    }
 }
 
 /* Reflection textarea */

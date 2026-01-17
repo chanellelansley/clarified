@@ -6027,12 +6027,13 @@ function showDecisionDetailModal(decision) {
                     <p id="detail-outcome">You followed the recommendation</p>
                 </div>
 
-                <div class="detail-section">
-                    <h4>How are you feeling about this now?</h4>
+                <div class="detail-section detail-feeling-section">
+                    <h4>Looking back, how does this decision feel?</h4>
+                    <p class="detail-feeling-helper">This helps your Decision Profile learn what works for you.</p>
                     <div class="feeling-options" id="detail-feeling-options">
-                        <button class="feeling-btn" data-feeling="good">😊 Good</button>
-                        <button class="feeling-btn" data-feeling="mixed">😐 Mixed</button>
-                        <button class="feeling-btn" data-feeling="regret">😔 Would do differently</button>
+                        <button class="feeling-btn" data-feeling="good"><span class="feeling-btn-emoji">😊</span><span class="feeling-btn-text">Feels right</span></button>
+                        <button class="feeling-btn" data-feeling="mixed"><span class="feeling-btn-emoji">😐</span><span class="feeling-btn-text">Unsure</span></button>
+                        <button class="feeling-btn" data-feeling="regret"><span class="feeling-btn-emoji">😕</span><span class="feeling-btn-text">I'd choose differently</span></button>
                     </div>
                 </div>
 
