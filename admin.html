@@ -130,6 +130,89 @@
             color: #666;
         }
 
+        /* Section header with view all link */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-header h2 {
+            margin-bottom: 0;
+        }
+
+        .view-all-link {
+            font-size: 13px;
+            color: #666;
+            text-decoration: none;
+        }
+
+        .view-all-link:hover {
+            color: #418F6F;
+            text-decoration: underline;
+        }
+
+        /* Truncated text with tooltip */
+        .truncate-text {
+            max-width: 300px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: default;
+        }
+
+        .truncate-text:hover {
+            white-space: normal;
+            overflow: visible;
+            position: relative;
+            z-index: 10;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 8px;
+            margin: -8px;
+            border-radius: 4px;
+        }
+
+        /* Outcome pills */
+        .outcome-pills {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .outcome-pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: #f9fafb;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .outcome-pill-emoji {
+            font-size: 20px;
+        }
+
+        .outcome-pill-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .outcome-pill-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        /* Stat description */
+        .stat-desc {
+            font-size: 12px;
+            color: #999;
+            margin-top: 4px;
+        }
+
         .error {
             background: #fef2f2;
             color: #dc2626;
@@ -259,23 +342,33 @@
                 <div class="stat-change" id="decisions-today">Loading...</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">Quick Decisions</div>
+                <div class="stat-label">Everyday Decisions</div>
                 <div class="stat-value" id="quick-decisions">-</div>
+                <div class="stat-desc">Quick guidance requests</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">Deep Decisions</div>
+                <div class="stat-label">Life Decisions</div>
                 <div class="stat-value" id="deep-decisions">-</div>
+                <div class="stat-desc">Deep guidance sessions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Followed Recommendation</div>
+                <div class="stat-value" id="followed-rate">-</div>
+                <div class="stat-desc" id="followed-desc">Of decided outcomes</div>
             </div>
         </div>
 
         <!-- Recent Signups -->
         <div class="section">
-            <h2>Recent Signups</h2>
+            <div class="section-header">
+                <h2>Recent Signups</h2>
+                <a href="#" class="view-all-link">View all</a>
+            </div>
             <table>
                 <thead>
                     <tr>
-                        <th>Email</th>
-                        <th>Signed Up</th>
+                        <th>User</th>
+                        <th>Joined</th>
                     </tr>
                 </thead>
                 <tbody id="recent-users">
@@ -286,13 +379,16 @@
 
         <!-- Recent Decisions -->
         <div class="section">
-            <h2>Recent Decisions</h2>
+            <div class="section-header">
+                <h2>Recent Decisions</h2>
+                <a href="#" class="view-all-link">View all</a>
+            </div>
             <table>
                 <thead>
                     <tr>
-                        <th>Decision</th>
+                        <th>What they're deciding</th>
                         <th>Type</th>
-                        <th>Created</th>
+                        <th>When</th>
                     </tr>
                 </thead>
                 <tbody id="recent-decisions">
@@ -301,14 +397,47 @@
             </table>
         </div>
 
+        <!-- Decision Outcomes -->
+        <div class="section">
+            <div class="section-header">
+                <h2>Decision Outcomes (Last 14 Days)</h2>
+            </div>
+            <p style="font-size: 14px; color: #666; margin-bottom: 16px;">How users feel about their decisions after reflection</p>
+            <div class="outcome-pills" id="outcome-pills">
+                <div class="outcome-pill">
+                    <span class="outcome-pill-emoji">😊</span>
+                    <div>
+                        <div class="outcome-pill-value" id="outcome-good">-</div>
+                        <div class="outcome-pill-label">Feels right</div>
+                    </div>
+                </div>
+                <div class="outcome-pill">
+                    <span class="outcome-pill-emoji">😐</span>
+                    <div>
+                        <div class="outcome-pill-value" id="outcome-mixed">-</div>
+                        <div class="outcome-pill-label">Unsure</div>
+                    </div>
+                </div>
+                <div class="outcome-pill">
+                    <span class="outcome-pill-emoji">😕</span>
+                    <div>
+                        <div class="outcome-pill-value" id="outcome-regret">-</div>
+                        <div class="outcome-pill-label">Would choose differently</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Signups by Day -->
         <div class="section">
-            <h2>Signups by Day (Last 7 Days)</h2>
+            <div class="section-header">
+                <h2>New Users (Last 7 Days)</h2>
+            </div>
             <table>
                 <thead>
                     <tr>
                         <th>Date</th>
-                        <th>Signups</th>
+                        <th>New users</th>
                     </tr>
                 </thead>
                 <tbody id="signups-by-day">
@@ -385,6 +514,7 @@
             await Promise.all([
                 loadUserStats(),
                 loadDecisionStats(),
+                loadOutcomeStats(),
                 loadRecentUsers(),
                 loadRecentDecisions(),
                 loadSignupsByDay()
@@ -439,7 +569,7 @@
                 document.getElementById('decisions-today').textContent =
                     `+${todayDecisions || 0} today`;
 
-                // Quick decisions
+                // Everyday (quick) decisions
                 const { count: quickCount } = await supabaseClient
                     .from('decisions')
                     .select('*', { count: 'exact', head: true })
@@ -447,15 +577,66 @@
 
                 document.getElementById('quick-decisions').textContent = quickCount || 0;
 
-                // Deep decisions
+                // Life (deep) decisions
                 const { count: deepCount } = await supabaseClient
                     .from('decisions')
                     .select('*', { count: 'exact', head: true })
                     .eq('decision_type', 'deep');
 
                 document.getElementById('deep-decisions').textContent = deepCount || 0;
+
+                // Followed recommendation rate
+                const { count: followedCount } = await supabaseClient
+                    .from('decisions')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('outcome_choice', 'followed_recommendation');
+
+                const { count: decidedCount } = await supabaseClient
+                    .from('decisions')
+                    .select('*', { count: 'exact', head: true })
+                    .not('outcome_choice', 'is', null)
+                    .neq('outcome_choice', 'still_deciding');
+
+                if (decidedCount && decidedCount > 0) {
+                    const rate = Math.round((followedCount / decidedCount) * 100);
+                    document.getElementById('followed-rate').textContent = rate + '%';
+                    document.getElementById('followed-desc').textContent = `${followedCount} of ${decidedCount} decided`;
+                } else {
+                    document.getElementById('followed-rate').textContent = '-';
+                    document.getElementById('followed-desc').textContent = 'No outcomes yet';
+                }
             } catch (error) {
                 console.error('Error loading decision stats:', error);
+            }
+        }
+
+        // Load outcome feeling stats (last 14 days)
+        async function loadOutcomeStats() {
+            try {
+                const fourteenDaysAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString();
+
+                // Get decisions with outcome feelings from last 14 days
+                const { data: decisions, error } = await supabaseClient
+                    .from('decisions')
+                    .select('outcome_feeling')
+                    .gte('created_at', fourteenDaysAgo)
+                    .not('outcome_feeling', 'is', null);
+
+                if (error) throw error;
+
+                // Count by feeling type
+                let good = 0, mixed = 0, regret = 0;
+                decisions?.forEach(d => {
+                    if (d.outcome_feeling === 'good') good++;
+                    else if (d.outcome_feeling === 'mixed') mixed++;
+                    else if (d.outcome_feeling === 'regret') regret++;
+                });
+
+                document.getElementById('outcome-good').textContent = good;
+                document.getElementById('outcome-mixed').textContent = mixed;
+                document.getElementById('outcome-regret').textContent = regret;
+            } catch (error) {
+                console.error('Error loading outcome stats:', error);
             }
         }
 
@@ -508,13 +689,21 @@
                     return;
                 }
 
-                tbody.innerHTML = decisions.map(d => `
+                const typeLabels = {
+                    'quick': 'Everyday',
+                    'deep': 'Life'
+                };
+
+                tbody.innerHTML = decisions.map(d => {
+                    const question = d.question || 'Untitled';
+                    const typeLabel = typeLabels[d.decision_type] || 'Everyday';
+                    return `
                     <tr>
-                        <td>${truncate(d.question, 50)}</td>
-                        <td><span class="badge badge-${d.decision_type || 'quick'}">${d.decision_type || 'quick'}</span></td>
+                        <td class="truncate-text" title="${escapeHtml(question)}">${escapeHtml(truncate(question, 60))}</td>
+                        <td><span class="badge badge-${d.decision_type || 'quick'}">${typeLabel}</span></td>
                         <td>${formatDate(d.created_at)}</td>
                     </tr>
-                `).join('');
+                `}).join('');
             } catch (error) {
                 console.error('Error loading recent decisions:', error);
                 document.getElementById('recent-decisions').innerHTML =
@@ -575,6 +764,17 @@
         function truncate(str, len) {
             if (!str) return '';
             return str.length > len ? str.substring(0, len) + '...' : str;
+        }
+
+        // Helper: Escape HTML to prevent XSS
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
         }
 
         // Initialize
