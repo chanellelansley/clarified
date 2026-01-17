@@ -651,6 +651,247 @@ p, li {
     height: 24px;
 }
 
+/* Decision Profile nav link with lock state */
+.nav-dna-link {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+}
+
+.nav-dna-link > span {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.nav-dna-lock {
+    display: none;
+    width: 14px;
+    height: 14px;
+    stroke: var(--gray-400);
+}
+
+.nav-dna-link.locked .nav-dna-lock {
+    display: inline-block;
+}
+
+.nav-dna-link.locked {
+    color: var(--gray-400);
+    cursor: default;
+}
+
+.nav-dna-link.locked:hover {
+    color: var(--gray-400);
+}
+
+.nav-dna-progress {
+    display: none;
+    font-size: var(--text-xs);
+    color: var(--gray-400);
+    font-weight: 400;
+}
+
+.nav-dna-link.locked .nav-dna-progress {
+    display: block;
+}
+
+/* Mobile Hamburger Menu */
+.nav-hamburger {
+    display: none;
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    color: var(--gray-600);
+    border-radius: var(--radius-sm);
+    transition: background-color 200ms ease;
+}
+
+.nav-hamburger:hover {
+    background-color: var(--sage-50);
+}
+
+.nav-hamburger svg {
+    display: block;
+}
+
+/* Mobile menu drawer */
+.mobile-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-200);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    z-index: 99;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 300ms ease;
+}
+
+.mobile-menu.open {
+    max-height: 400px;
+}
+
+.mobile-menu-items {
+    padding: var(--spacing-md) var(--spacing-lg);
+}
+
+.mobile-menu-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-sm);
+    color: var(--gray-700);
+    text-decoration: none;
+    font-size: var(--text-base);
+    font-weight: 500;
+    border-radius: var(--radius-sm);
+    transition: background-color 200ms ease, color 200ms ease;
+    position: relative;
+}
+
+.mobile-menu-item:hover {
+    background-color: var(--sage-50);
+    color: var(--sage-green);
+}
+
+.mobile-menu-item svg {
+    flex-shrink: 0;
+    color: var(--gray-500);
+    transition: color 200ms ease;
+}
+
+.mobile-menu-item:hover svg {
+    color: var(--sage-green);
+}
+
+.mobile-menu-item.disabled {
+    color: var(--gray-400);
+    pointer-events: none;
+}
+
+.mobile-menu-item.disabled svg {
+    color: var(--gray-300);
+}
+
+/* Mobile menu item with subtext (Decision Profile) */
+.mobile-menu-item-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+}
+
+.mobile-menu-item-label {
+    font-weight: 500;
+}
+
+.mobile-menu-item-subtext {
+    display: none;
+    font-size: var(--text-xs);
+    color: var(--gray-400);
+    font-weight: 400;
+}
+
+.mobile-menu-item-progress {
+    display: none;
+    font-size: var(--text-xs);
+    color: var(--gray-400);
+    font-weight: 400;
+}
+
+.mobile-menu-lock-icon {
+    display: none;
+    width: 14px;
+    height: 14px;
+    color: var(--gray-400);
+    margin-left: -4px;
+    margin-right: -4px;
+}
+
+/* When DNA is locked, show lock icon, subtext, and progress */
+#mobile-nav-dna.locked .mobile-menu-lock-icon {
+    display: block;
+}
+
+#mobile-nav-dna.locked .mobile-menu-item-subtext {
+    display: block;
+}
+
+#mobile-nav-dna.locked .mobile-menu-item-progress {
+    display: block;
+}
+
+#mobile-nav-dna.locked {
+    color: var(--gray-400);
+}
+
+#mobile-nav-dna.locked .mobile-menu-icon-main {
+    color: var(--gray-300);
+}
+
+#mobile-nav-dna.locked:hover {
+    background-color: transparent;
+    color: var(--gray-400);
+}
+
+/* Legacy class - can be removed if not used elsewhere */
+.mobile-menu-locked {
+    display: none;
+}
+
+.mobile-menu-divider {
+    height: 1px;
+    background: var(--gray-200);
+    margin: var(--spacing-sm) 0;
+}
+
+.mobile-menu-signout {
+    color: var(--gray-500);
+}
+
+.mobile-menu-signout:hover {
+    color: var(--error-red);
+    background-color: rgba(239, 68, 68, 0.05);
+}
+
+.mobile-menu-signout:hover svg {
+    color: var(--error-red);
+}
+
+/* Mobile responsive - show hamburger, hide desktop nav */
+@media (max-width: 767px) {
+    .nav-desktop {
+        display: none !important;
+    }
+
+    .nav-hamburger {
+        display: block;
+    }
+
+    .mobile-menu {
+        display: block;
+    }
+
+    .nav {
+        position: relative;
+    }
+}
+
+/* Desktop - ensure hamburger stays hidden */
+@media (min-width: 768px) {
+    .nav-hamburger {
+        display: none !important;
+    }
+
+    .mobile-menu {
+        display: none !important;
+    }
+}
+
 /* Decision Type Selection Page Navigation */
 .decision-nav {
     background: var(--white);

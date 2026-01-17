@@ -5503,6 +5503,8 @@ async function loadAndRenderDecisions() {
 // Alias for compatibility - other code calls loadDecisions()
 async function loadDecisions() {
     await loadAndRenderDecisions();
+    // Update DNA nav locked state whenever decisions are loaded/refreshed
+    await updateDNANavLockedState();
 }
 
 function updateStreakDisplay(decisions) {
@@ -7982,6 +7984,204 @@ function handleAccountNavClick() {
     }
 }
 
+// ============================================
+// MOBILE HAMBURGER MENU
+// ============================================
+
+// Toggle mobile menu open/closed
+function toggleMobileMenu() {
+    const menu = document.getElementById('mobile-menu');
+    const hamburger = document.getElementById('nav-hamburger');
+
+    if (menu && hamburger) {
+        const isOpen = menu.classList.toggle('open');
+        hamburger.setAttribute('aria-expanded', isOpen);
+
+        // Update DNA locked state when opening
+        if (isOpen) {
+            updateMobileDNALockedState();
+        }
+    }
+}
+
+// Close mobile menu
+function closeMobileMenu() {
+    const menu = document.getElementById('mobile-menu');
+    const hamburger = document.getElementById('nav-hamburger');
+
+    if (menu) {
+        menu.classList.remove('open');
+    }
+    if (hamburger) {
+        hamburger.setAttribute('aria-expanded', 'false');
+    }
+}
+
+// Centralized DNA locked state tracking
+let cachedDNADecisionCount = null;
+
+// Update Decision Profile locked state in both desktop and mobile nav
+async function updateDNANavLockedState() {
+    // Desktop elements
+    const desktopDnaLink = document.getElementById('nav-dna-profile');
+    const desktopProgress = document.getElementById('nav-dna-progress');
+
+    // Mobile elements
+    const mobileDnaItem = document.getElementById('mobile-nav-dna');
+    const mobileSubtext = document.getElementById('mobile-dna-subtext');
+    const mobileProgress = document.getElementById('mobile-dna-progress');
+
+    // Check if user is logged in
+    const currentUser = window.supabaseClient?.getCurrentUser();
+    if (!currentUser) {
+        // Not logged in - show as locked
+        if (desktopDnaLink) {
+            desktopDnaLink.classList.add('locked');
+            if (desktopProgress) desktopProgress.textContent = 'Sign in to unlock';
+        }
+        if (mobileDnaItem) {
+            mobileDnaItem.classList.add('locked');
+            if (mobileSubtext) mobileSubtext.textContent = 'Sign in to unlock';
+            if (mobileProgress) mobileProgress.textContent = '';
+        }
+        cachedDNADecisionCount = 0;
+        return;
+    }
+
+    // Check decision count
+    try {
+        const decisions = await window.supabaseClient.getDecisions(currentUser.id);
+        const decisionCount = decisions?.length || 0;
+        cachedDNADecisionCount = decisionCount;
+
+        if (decisionCount < DNA_UNLOCK_THRESHOLD) {
+            // Desktop nav
+            if (desktopDnaLink) {
+                desktopDnaLink.classList.add('locked');
+                if (desktopProgress) {
+                    desktopProgress.textContent = `${decisionCount} / ${DNA_UNLOCK_THRESHOLD} decisions`;
+                }
+            }
+
+            // Mobile nav
+            if (mobileDnaItem) {
+                mobileDnaItem.classList.add('locked');
+                if (mobileSubtext) mobileSubtext.textContent = 'Unlocks after 5 decisions';
+                if (mobileProgress) mobileProgress.textContent = `${decisionCount} / ${DNA_UNLOCK_THRESHOLD} decisions completed`;
+            }
+        } else {
+            // Unlocked state
+            if (desktopDnaLink) {
+                desktopDnaLink.classList.remove('locked');
+            }
+            if (mobileDnaItem) {
+                mobileDnaItem.classList.remove('locked');
+            }
+        }
+    } catch (error) {
+        console.error('[DNA Nav] Error checking DNA status:', error);
+        // Default to unlocked on error
+        if (desktopDnaLink) desktopDnaLink.classList.remove('locked');
+        if (mobileDnaItem) mobileDnaItem.classList.remove('locked');
+        cachedDNADecisionCount = DNA_UNLOCK_THRESHOLD; // Assume unlocked on error
+    }
+}
+
+// Check if DNA Profile is currently locked (uses cached value for sync checks)
+function isDNAProfileLocked() {
+    if (cachedDNADecisionCount === null) {
+        return true; // Assume locked if not yet checked
+    }
+    return cachedDNADecisionCount < DNA_UNLOCK_THRESHOLD;
+}
+
+// Get remaining decisions needed
+function getDNARemainingDecisions() {
+    if (cachedDNADecisionCount === null) {
+        return DNA_UNLOCK_THRESHOLD;
+    }
+    return Math.max(0, DNA_UNLOCK_THRESHOLD - cachedDNADecisionCount);
+}
+
+// Legacy alias for mobile menu
+async function updateMobileDNALockedState() {
+    await updateDNANavLockedState();
+}
+
+// Handle mobile menu item clicks
+function handleMobileMenuClick(action) {
+    closeMobileMenu();
+
+    switch (action) {
+        case 'decisions':
+            if (isGuestMode) {
+                showSignupPrompt('decisions');
+            } else {
+                showPage('decisions');
+            }
+            break;
+
+        case 'dna-profile':
+            handleDNANavClick();
+            break;
+
+        case 'account':
+            if (isGuestMode) {
+                showSignupPrompt('account');
+            } else {
+                showPage('account');
+            }
+            break;
+
+        case 'feedback':
+            // Open feedback modal/form
+            if (typeof openFeedbackModal === 'function') {
+                openFeedbackModal();
+            } else if (typeof showFeedbackForm === 'function') {
+                showFeedbackForm();
+            } else {
+                // Fallback - scroll to clarity check if on a page with it
+                const clarityCheck = document.querySelector('.clarity-check-container');
+                if (clarityCheck) {
+                    clarityCheck.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    showToast('Feedback available after viewing a recommendation');
+                }
+            }
+            break;
+
+        case 'signout':
+            if (typeof handleSignOut === 'function') {
+                handleSignOut();
+            } else {
+                window.supabaseClient?.signOut().then(() => {
+                    showPage('landing');
+                });
+            }
+            break;
+    }
+}
+
+// Close mobile menu when clicking outside
+document.addEventListener('click', function(event) {
+    const menu = document.getElementById('mobile-menu');
+    const hamburger = document.getElementById('nav-hamburger');
+
+    if (menu && menu.classList.contains('open')) {
+        // Check if click is outside menu and hamburger
+        if (!menu.contains(event.target) && !hamburger.contains(event.target)) {
+            closeMobileMenu();
+        }
+    }
+});
+
+// Close mobile menu on window resize to desktop
+window.addEventListener('resize', function() {
+    if (window.innerWidth >= 768) {
+        closeMobileMenu();
+    }
+});
+
 // Go back from signup
 function goBackFromSignup() {
     if (isGuestMode && guestDecisionData) {
@@ -8686,8 +8886,8 @@ async function initApp() {
             } else {
                 showPage('decisions');
                 await loadDecisions();
-                // Check DNA status after loading decisions
-                await checkDNAStatus();
+                // Update DNA nav locked state after loading decisions
+                await updateDNANavLockedState();
             }
         } else {
             // Not logged in — show landing
@@ -9166,7 +9366,14 @@ function handleDNANavClick() {
         return;
     }
 
-    // Always go to the DNA profile page (it handles forming state internally)
+    // Check if locked - show toast instead of navigating
+    if (isDNAProfileLocked()) {
+        const remaining = getDNARemainingDecisions();
+        showToast(`Make ${remaining} more decision${remaining === 1 ? '' : 's'} to unlock your Decision Profile`);
+        return;
+    }
+
+    // Unlocked - go to the DNA profile page
     openDNAPage();
 }
 
@@ -9186,12 +9393,15 @@ async function openDNAPage() {
 
     const decisionCount = decisions?.length || 0;
 
+    // Update cached count for nav state consistency
+    cachedDNADecisionCount = decisionCount;
+
     // Show the page first
     showPage('dna-profile');
 
     // Check if they have enough decisions
     if (decisionCount < DNA_UNLOCK_THRESHOLD) {
-        // Show forming state
+        // Show forming state (friendly locked state, not empty page)
         showDNAFormingState(decisionCount);
         return;
     }
@@ -9212,21 +9422,30 @@ async function openDNAPage() {
 }
 
 function showDNAFormingState(decisionCount) {
-    const remaining = DNA_UNLOCK_THRESHOLD - decisionCount;
-
     // Hide full profile, show forming state
     document.getElementById('dna-profile-content').style.display = 'none';
     document.getElementById('dna-profile-forming').style.display = 'block';
 
-    // Update progress
-    document.getElementById('forming-count').textContent = decisionCount;
-    document.getElementById('forming-remaining').textContent = remaining;
-    document.getElementById('forming-remaining-plural').textContent = remaining === 1 ? '' : 's';
+    // Update progress indicator
+    const formingCount = document.getElementById('forming-count');
+    if (formingCount) {
+        formingCount.textContent = decisionCount;
+    }
 
+    // Update progress bar
     const progressPercent = (decisionCount / DNA_UNLOCK_THRESHOLD) * 100;
-    document.getElementById('forming-progress-fill').style.width = `${progressPercent}%`;
+    const progressFill = document.getElementById('forming-progress-fill');
+    if (progressFill) {
+        progressFill.style.width = `${progressPercent}%`;
+    }
 
-    console.log('[DNA] Showing forming state:', { decisionCount, remaining, progressPercent });
+    // Update progress text (X of 5 decisions completed)
+    const progressText = document.querySelector('.forming-progress-text');
+    if (progressText) {
+        progressText.innerHTML = `<span id="forming-count">${decisionCount}</span> of ${DNA_UNLOCK_THRESHOLD} decisions completed`;
+    }
+
+    console.log('[DNA] Showing forming state:', { decisionCount, progressPercent });
 }
 
 function showDNAFullProfile(data) {

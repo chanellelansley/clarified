@@ -17,7 +17,12 @@
       "Bash(awk 'NR==41{system\\(\"\"cat guest-onboarding-pages.html\"\"\\); print; next} {print}' clarity.html)",
       "Bash(awk 'NR==2215{system\\(\"\"cat guest-onboarding-modals.html\"\"\\); print \"\"\"\"; print; next} {print}' clarity.html)",
       "Bash(curl:*)",
-      "Bash(awk:*)"
+      "Bash(awk:*)",
+      "Bash(git checkout:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git merge:*)"
     ]
   }
 }
